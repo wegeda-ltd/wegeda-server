@@ -22,8 +22,8 @@ const start = async () => {
     } catch (error) {
         console.log(error)
     }
-    app.listen(process.env.PORT || 3002, () => {
-        console.log("listening on port 3001!");
+    app.listen(process.env.PORT || 8081, () => {
+        console.log("listening on port 8081!");
     })
 }
 

@@ -14,7 +14,9 @@ const start = async () => {
     try {
         mongoose.set('strictQuery', false);
 
-        await mongoose.connect(process.env.MONGO_URI);
+        await mongoose.connect(process.env.MONGO_URI, {
+            dbName: "wegeda"
+        });
 
         console.log("connected to mongodb");
     } catch (error) {

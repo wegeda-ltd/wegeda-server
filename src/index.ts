@@ -6,6 +6,9 @@ import { app } from "./app"
 config()
 const start = async () => {
     console.log("starting up...")
+    if (!process.env.JWT_KEY) {
+        throw new Error('JWT_KEY must be defined')
+    }
 
     if (!process.env.MONGO_URI) {
         throw new Error('MONGO_URI must be defined');
@@ -22,8 +25,9 @@ const start = async () => {
     } catch (error) {
         console.log(error)
     }
-    app.listen(process.env.PORT || 8081, () => {
-        console.log("listening on port 8081!");
+    let port = process.env.PORT || 8081
+    app.listen(port, () => {
+        console.log("listening on port " + port);
     })
 }
 

@@ -4,6 +4,7 @@ import { currentUser, requireAuth, validateRequest } from "../../middlewares";
 import { HouseSeeker, User } from "../../models";
 import jwt from 'jsonwebtoken';
 import { UserType } from "../../types";
+import { BadRequestError } from "../../errors";
 
 const router = Router()
 
@@ -54,6 +55,7 @@ router.post("/api/users/onboarding-house-seeker", currentUser, requireAuth, [
         return
     }
 
+
     current_user.set({
         first_name,
         last_name,
@@ -65,20 +67,25 @@ router.post("/api/users/onboarding-house-seeker", currentUser, requireAuth, [
         id: current_user!._id,
         email: current_user!.email,
         phone_number: current_user!.phone_number,
-        profile_type: current_user!.profile_type
+        profile_type: current_user!.profile_type,
     }, process.env.JWT_KEY!)
 
     req.session = {
         jwt: userJwt
     }
 
+    const existing_house_seeker = await HouseSeeker.findOne({ user: current_user.id })
+
+    if (existing_house_seeker) {
+        throw new BadRequestError("User is already onboarded!")
+    }
     const house_seeker = HouseSeeker.build({
         user: current_user.id,
         date_of_birth,
         about,
         gender,
         occupation,
-        descriptions,
+        description: descriptions,
         interests,
         smokes,
         drinks,

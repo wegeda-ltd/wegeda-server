@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import { BadRequestError } from "../../errors";
 import { currentUser, requireAuth, validateRequest } from "../../middlewares";
 import { AddressHistory, Verification } from "../../models";
+import { VerificationStatus } from "../../types";
 
 const router = Router()
 
@@ -22,6 +23,7 @@ router.post("/api/verification/upload-address", currentUser, requireAuth, [
     body('problems_with_landlord').notEmpty().withMessage('do you have problems with your landlord?'),
 
 ], validateRequest, async (req: Request, res: Response) => {
+    console.log("TOUCHED")
     let {
         prev_address_line1,
         prev_address_line2,
@@ -59,7 +61,7 @@ router.post("/api/verification/upload-address", currentUser, requireAuth, [
             country: prev_country ? prev_country : "Nigeria",
             postal_code: prev_postal_code,
             landlord_name: prev_landlord_name,
-            landlord_phone_number: prev_landlord_phone_number,
+            landlord_phone_number: `0${prev_landlord_phone_number}`,
             problems_with_landlord: problems_with_prev_landlord
         },
         user: req.currentUser!.id,
@@ -71,22 +73,28 @@ router.post("/api/verification/upload-address", currentUser, requireAuth, [
             country: country ? country : "Nigeria",
             postal_code: postal_code,
             landlord_name,
-            landlord_phone_number,
+            landlord_phone_number: `0${landlord_phone_number}`,
             problems_with_landlord
         },
     })
 
     await address.save()
-    const verification = await Verification.findOne({ user: req.params.user_id })
+    const verification = await Verification.findOne({ user: req.currentUser!.id })
 
     if (!verification) {
         const newVerification = Verification.build({
             user: req.currentUser!.id,
-
+            address_history_verified: VerificationStatus.Pending
         })
 
         await newVerification.save()
+    } else {
+        verification.set({
+            address_history_verified: VerificationStatus.Pending
+        })
+        await verification.save()
     }
+
     res.status(200).send({ message: 'Address history uploaded' })
 
 })

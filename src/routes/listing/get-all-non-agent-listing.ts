@@ -24,6 +24,7 @@ router.get("/api/listings/house-seeker-listings/", currentUser, requireAuth, asy
         page: 1,
         limit: 10,
         customLabels: myCustomLabels,
+        populate: ["user"]
 
     };
 

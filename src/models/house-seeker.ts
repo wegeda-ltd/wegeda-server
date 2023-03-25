@@ -17,7 +17,7 @@ interface HouseSeekerAttrs {
     partying: string;
     occupation: string;
     company?: string;
-    descriptions: string[];
+    description: string[];
     interests: string[];
     pets?: string[];
     smokes: string;
@@ -41,7 +41,7 @@ interface HouseSeekerDoc extends Document {
     partying: string;
     occupation: string;
     company?: string;
-    descriptions: string[];
+    description: string[];
     interests: string[];
     pets?: string[];
     smokes: string;

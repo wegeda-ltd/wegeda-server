@@ -2,9 +2,9 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { BadRequestError } from "../../errors";
 import { currentUser, requireAuth, validateRequest } from "../../middlewares";
-import { Listing, UserSubscription, } from "../../models";
+import { Listing, UserSubscription, Verification, } from "../../models";
 import { DateClass } from "../../services/date";
-import { ListingStatus, UserType } from "../../types";
+import { ListingStatus, UserType, VerificationStatus } from "../../types";
 
 const router = Router()
 
@@ -49,9 +49,27 @@ router.post("/api/listings/create", currentUser, requireAuth, [
 
     }
 
+    let verifications = await Verification.findOne({ user: req.currentUser!.id })
+    let is_verified = false;
+    if (verifications) {
+        if (
+            (verifications.address_history_verified == VerificationStatus.Verified &&
+                verifications.social_media_verified == VerificationStatus.Verified &&
+                verifications.income_verified == VerificationStatus.Verified &&
+                verifications.occupation_verified == VerificationStatus.Verified &&
+                verifications.nin_verified == VerificationStatus.Verified)
+            || req.currentUser!.profile_type == UserType.Agent
+
+        ) {
+            is_verified = true
+        } else {
+            is_verified = false
+        }
+    }
     const { room_type, total_bathroom, total_bedroom, state, city, monthly_payment, minimum_stay, about_room, listing_title, listing_features, listing_images, status } = req.body
 
     const new_listing = Listing.build({
+        is_verified,
         user: req.currentUser!.id,
         room_type,
         total_bedroom,

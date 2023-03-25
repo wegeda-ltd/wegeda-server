@@ -8,6 +8,7 @@ interface ListingAttrs {
     total_bedroom: number;
     total_bathroom: number;
     state: string;
+    is_verified: boolean;
     city: string;
     monthly_payment: number;
     minimum_stay: number;
@@ -28,6 +29,8 @@ interface ListingDoc extends Document {
     total_bathroom: number;
     state: string;
     city: string;
+    is_verified: boolean;
+
     monthly_payment: number;
     minimum_stay: number;
     about_room: string;
@@ -75,6 +78,10 @@ const listingSchema = new Schema({
     },
     minimum_stay: {
         type: Number,
+        required: true
+    },
+    is_verified: {
+        type: Boolean,
         required: true
     },
     about_room: {

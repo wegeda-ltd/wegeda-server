@@ -8,7 +8,7 @@ router.get("/api/notification/all", currentUser, requireAuth, [
 
 ], validateRequest, async (req: Request, res: Response) => {
 
-    const notifications = Notification.find()
+    const notifications = await Notification.find({})
 
     res.status(200).send({ message: 'Notifications retrieved!', notifications })
 

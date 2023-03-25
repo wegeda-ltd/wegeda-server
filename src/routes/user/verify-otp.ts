@@ -41,7 +41,6 @@ router.post("/api/users/verify-otp", [
 
 
     let user = await User.findOne({ phone_number, email })
-
     let userJwt: string;
     if (!user) {
         let newUser = User.build({
@@ -65,7 +64,7 @@ router.post("/api/users/verify-otp", [
 
     }
 
-    userJwt = jwt.sign({ id: user!.id, email: user!.email, phone_number: user!.phone_number }, process.env.JWT_KEY!)
+    userJwt = jwt.sign({ id: user!.id, email: user!.email, phone_number: user!.phone_number, profile_type: user!.profile_type }, process.env.JWT_KEY!)
 
     req.session = {
         jwt: userJwt

@@ -7,10 +7,10 @@ import { VerificationStatus } from "../types";
 interface VerificationAttrs {
     user: string;
     address_history_verified?: VerificationStatus;
-    income?: VerificationStatus;
+    income_verified?: VerificationStatus;
     occupation_verified?: VerificationStatus;
-    nin?: VerificationStatus;
-    social_media?: VerificationStatus;
+    nin_verified?: VerificationStatus;
+    social_media_verified?: VerificationStatus;
 }
 
 interface VerificationDoc extends Document {
@@ -37,31 +37,31 @@ const verificationSchema = new Schema({
         type: String,
         required: true,
         enum: Object.values(VerificationStatus),
-        default: VerificationStatus.Pending
+        default: VerificationStatus.NotVerified
     },
     address_history_verified: {
         type: String,
         required: true,
         enum: Object.values(VerificationStatus),
-        default: VerificationStatus.Pending
+        default: VerificationStatus.NotVerified
     },
     income_verified: {
         type: String,
         required: true,
         enum: Object.values(VerificationStatus),
-        default: VerificationStatus.Pending
+        default: VerificationStatus.NotVerified
     },
     nin_verified: {
         type: String,
         required: true,
         enum: Object.values(VerificationStatus),
-        default: VerificationStatus.Pending
+        default: VerificationStatus.NotVerified
     },
     social_media_verified: {
         type: String,
         required: true,
         enum: Object.values(VerificationStatus),
-        default: VerificationStatus.Pending
+        default: VerificationStatus.NotVerified
     }
 }, {
     toJSON: {

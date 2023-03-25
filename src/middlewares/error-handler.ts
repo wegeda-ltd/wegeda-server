@@ -10,7 +10,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     }
 
 
-    console.log(err)
+    console.log(err, "ERROR OOOOOOO")
 
     res.status(500).send({
         errors: [

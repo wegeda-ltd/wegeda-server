@@ -36,7 +36,7 @@ router.patch("/api/users/update-user", currentUser, requireAuth, async (req: Req
 
         user.set({
             about: about ? about : user.about,
-            descriptions: descriptions ? descriptions : user.descriptions,
+            description: descriptions ? descriptions : user.description,
             interests: interests ? interests : user.interests,
             partying: partying ? partying : user.partying,
             cooks: cooks ? cooks : user.cooks,

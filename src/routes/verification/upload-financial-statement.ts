@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import { BadRequestError } from "../../errors";
 import { currentUser, requireAuth, validateRequest } from "../../middlewares";
 import { FinancialStatement, Verification } from "../../models";
+import { VerificationStatus } from "../../types";
 
 const router = Router()
 
@@ -23,17 +24,23 @@ router.post("/api/verification/upload-financials", currentUser, requireAuth, [
     })
 
     await financials.save()
-    const verification = await Verification.findOne({ user: req.params.user_id })
+    const verification = await Verification.findOne({ user: req.currentUser!.id })
+
 
     if (!verification) {
         const newVerification = Verification.build({
             user: req.currentUser!.id,
-
+            income_verified: VerificationStatus.Pending
         })
 
         await newVerification.save()
+    } else {
+        verification.set({
+            income_verified: VerificationStatus.Pending
+        })
+        await verification.save()
     }
-    res.status(200).send({ message: 'Otp sent to your sms and email' })
+    res.status(200).send({ message: 'Financial statement uploaded' })
 
 })
 

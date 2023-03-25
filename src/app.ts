@@ -43,6 +43,7 @@ import {
 
 import {
     currentUserRouter,
+    getUserByIdRouter,
     onboardingAgentRouter,
     onboardingHouseSeekerRouter,
     resendOtpRouter,
@@ -120,6 +121,7 @@ app.use([
 
     // User
     currentUserRouter,
+    getUserByIdRouter,
     onboardingAgentRouter,
     onboardingHouseSeekerRouter,
     resendOtpRouter,

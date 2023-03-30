@@ -1,12 +1,11 @@
 import { Request, Response, Router } from "express";
 
-import { currentUser, requireAuth, } from "../../middlewares";
-import { HouseSeeker, User } from "../../models";
+import { currentUser, requireAuth } from "../../middlewares";
+import { HouseSeeker } from "../../models";
 
 const router = Router()
 
-router.get("/api/users/all", currentUser, requireAuth, async (req: Request, res: Response) => {
-
+router.get("/api/users", currentUser, requireAuth, async (req: Request, res: Response) => {
 
     const myCustomLabels = {
         totalDocs: 'itemCount',
@@ -28,7 +27,11 @@ router.get("/api/users/all", currentUser, requireAuth, async (req: Request, res:
 
     };
 
-    const users = await HouseSeeker.paginate({}, options)
+
+    const users = await HouseSeeker.paginate({
+
+    }, options)
+
 
 
     res.status(200).send({ message: 'Users retrieved', users: users.itemsList, paginator: users.paginator })

@@ -30,6 +30,7 @@ export const sendSMS = async ({ message, phone_number }: SMSProps) => {
                 }
             ]
         })
+
         return true
     } catch (error) {
         throw new ServerError()

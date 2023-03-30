@@ -1,4 +1,5 @@
 export * from './current-user'
+export * from './get-all-users'
 export * from './get-user-by-id'
 export * from './onboarding-agent'
 export * from './onboarding-house-seeker'

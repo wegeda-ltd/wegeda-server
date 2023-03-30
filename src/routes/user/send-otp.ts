@@ -19,10 +19,14 @@ router.post("/api/users/send-otp", [
 
     }
 
+
+
     // send otp to phone
     let phone_otp = await OtpClass.generateOtp({ phone_number })
 
     let message = `Your verification OTP is ${phone_otp}`
+
+
 
     await sendSMS({ message, phone_number })
 

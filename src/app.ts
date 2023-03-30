@@ -15,6 +15,7 @@ import {
 import {
     createListingRouter,
     getAllAgentListingRouter,
+    getAllListingsRouter,
     getAllNonAgentListingRouter,
     getListingByIdRouter,
     getUserListingRouter,
@@ -43,6 +44,7 @@ import {
 
 import {
     currentUserRouter,
+    getAllUsersRouter,
     getUserByIdRouter,
     onboardingAgentRouter,
     onboardingHouseSeekerRouter,
@@ -96,6 +98,7 @@ app.use([
     // Listing
     createListingRouter,
     getAllAgentListingRouter,
+    getAllListingsRouter,
     getAllNonAgentListingRouter,
     getListingByIdRouter,
     getUserListingRouter,
@@ -122,6 +125,7 @@ app.use([
     // User
     currentUserRouter,
     getUserByIdRouter,
+    getAllUsersRouter,
     onboardingAgentRouter,
     onboardingHouseSeekerRouter,
     resendOtpRouter,

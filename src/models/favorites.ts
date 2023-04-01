@@ -5,7 +5,8 @@ import { UserType } from "../types";
 interface FavoriteAttrs {
     listing: string;
     user: string;
-    listing_type: UserType;
+    listing_type?: UserType;
+    liked_user?: string;
 
 
 }
@@ -13,7 +14,8 @@ interface FavoriteAttrs {
 interface FavoriteDoc extends Document {
     listing: string;
     user: string;
-    listing_type: UserType;
+    listing_type?: UserType;
+    liked_user?: string;
     createdAt: string;
     updatedAt: string;
 
@@ -27,7 +29,12 @@ const favoriteSchema = new Schema({
     listing: {
         type: Schema.Types.ObjectId,
         ref: 'Listing',
-        required: true
+
+    },
+    liked_user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+
     },
     user: {
         type: Schema.Types.ObjectId,

@@ -29,7 +29,7 @@ router.get("/api/users", currentUser, requireAuth, async (req: Request, res: Res
 
 
     const users = await HouseSeeker.paginate({
-
+        user: { $ne: req.currentUser!.id }
     }, options)
 
 

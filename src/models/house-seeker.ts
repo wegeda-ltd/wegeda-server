@@ -12,6 +12,8 @@ interface HouseSeekerAttrs {
     tertiary_institution?: string;
     church?: string;
     orientation_camp?: string;
+    favorites?: string[];
+
     cooks: string;
     religion: string;
     partying: string;
@@ -35,6 +37,8 @@ interface HouseSeekerDoc extends Document {
     gender: GenderType;
     tertiary_institution?: string;
     church?: string;
+    favorites?: string[];
+
     orientation_camp?: string;
     cooks: string;
     religion: string;
@@ -62,6 +66,10 @@ const houseSeekerSchema = new Schema({
         ref: 'User',
         required: true
     },
+
+    favorites: [{
+        type: Schema.Types.ObjectId, ref: 'User'
+    }],
 
     cooks: {
         type: String,

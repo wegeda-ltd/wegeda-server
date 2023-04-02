@@ -1,4 +1,5 @@
 export * from './add-to-favorites'
-export * from './get-agent-favorites'
-export * from './get-non-agent-favorites'
+export * from './get-room-favorites'
+export * from './get-all-favorites'
+export * from './get-roommate-favorites'
 export * from './remove-from-favorites'

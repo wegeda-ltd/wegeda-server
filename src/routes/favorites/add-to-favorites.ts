@@ -1,36 +1,48 @@
 import { Request, Response, Router } from "express";
 import { NotFoundError } from "../../errors";
 import { currentUser, requireAuth, } from "../../middlewares";
-import { Listing, Favorite, User } from "../../models";
+import { Listing, Favorite, User, HouseSeeker } from "../../models";
+import { FavoriteType } from "../../types";
 
 const router = Router()
 
-router.post("/api/favorites/:type/:id/add", currentUser, requireAuth, async (req: Request, res: Response) => {
+router.patch("/api/favorites/:type/:id/add", currentUser, requireAuth, async (req: Request, res: Response) => {
+
 
     const type = req.params.type
-    let listing!: any;
-    let liked_user: any;
+
     if (type === "listing") {
-        listing = await Listing.findById(req.params.id)
-        if (!listing) {
+        let favorite = await Listing.findById(req.params.id)
+        if (!favorite) {
             throw new NotFoundError("Listing not found")
         }
 
+        await favorite.updateOne({
+            $push: { favorites: req.currentUser!.id }
+        })
+
     } else {
-        liked_user = await User.findById(req.params.id)
-        if (!liked_user) {
+        let favorite = await HouseSeeker.findOne({ user: req.params.id })
+        if (!favorite) {
             throw new NotFoundError("User not found")
         }
+
+        await favorite.updateOne({
+            $push: { favorites: req.currentUser!.id }
+        })
     }
 
-    const newFavorite = Favorite.build({
-        user: req.currentUser!.id,
-        listing: listing!._id,
-        listing_type: listing!.listing_type,
-        liked_user: liked_user!.id
-    })
 
-    await newFavorite.save()
+
+    // const newFavorite = Favorite.build({
+    //     user: req.currentUser!.id,
+    //     favorite_type: type === "listing" ? FavoriteType.Listing : FavoriteType.User,
+    //     favorite_room,
+    //     favorite_roommate
+
+    // })
+
+    // await newFavorite.save()
     res.status(200).send({ message: 'Added to favorite' })
 
 })

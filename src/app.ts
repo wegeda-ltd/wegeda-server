@@ -7,8 +7,9 @@ import { errorHandler } from './middlewares';
 
 import {
     addToFavoriteRouter,
-    getAgentFavoritesRouter,
-    getNonAgentFavoritesRouter,
+    getRoomFavoritesRouter,
+    getAllFavoritesRouter,
+    getRoommateFavoritesRouter,
     removeFromFavoriteRouter
 } from './routes/favorites';
 
@@ -91,8 +92,9 @@ app.use(cookieSession({
 app.use([
     // favorites
     addToFavoriteRouter,
-    getAgentFavoritesRouter,
-    getNonAgentFavoritesRouter,
+    getRoomFavoritesRouter,
+    getAllFavoritesRouter,
+    getRoommateFavoritesRouter,
     removeFromFavoriteRouter,
 
     // Listing

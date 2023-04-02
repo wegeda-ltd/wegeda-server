@@ -1,21 +1,21 @@
 import { Schema, model, Document, PaginateModel } from "mongoose";
 import paginate from 'mongoose-paginate-v2';
-import { UserType } from "../types";
+import { FavoriteType, UserType } from "../types";
 
 interface FavoriteAttrs {
-    listing: string;
+    favorite_roommate?: string;
+    favorite_room?: string;
     user: string;
-    listing_type?: UserType;
-    liked_user?: string;
+    favorite_type: FavoriteType
 
 
 }
 
 interface FavoriteDoc extends Document {
-    listing: string;
+    favorite_roommate?: string;
+    favorite_room?: string;
     user: string;
-    listing_type?: UserType;
-    liked_user?: string;
+    favorite_type: FavoriteType
     createdAt: string;
     updatedAt: string;
 
@@ -26,25 +26,23 @@ interface FavoriteModel extends PaginateModel<FavoriteDoc> {
 }
 
 const favoriteSchema = new Schema({
-    listing: {
+    favorite_roommate: {
         type: Schema.Types.ObjectId,
-        ref: 'Listing',
-
+        ref: 'User'
     },
-    liked_user: {
+    favorite_room: {
         type: Schema.Types.ObjectId,
-        ref: 'User',
-
+        ref: 'Listing'
     },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    listing_type: {
+    favorite_type: {
         type: String,
         required: true,
-        enum: Object.values(UserType),
+        enum: Object.values(FavoriteType),
     },
 
 }, {

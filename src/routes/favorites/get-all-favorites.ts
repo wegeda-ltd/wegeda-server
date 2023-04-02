@@ -6,7 +6,7 @@ import { UserType } from "../../types";
 
 const router = Router()
 
-router.get("/api/favorites/agent/", currentUser, requireAuth, async (req: Request, res: Response) => {
+router.get("/api/favorites/", currentUser, requireAuth, async (req: Request, res: Response) => {
 
     const myCustomLabels = {
         totalDocs: 'itemCount',
@@ -24,12 +24,11 @@ router.get("/api/favorites/agent/", currentUser, requireAuth, async (req: Reques
         page: 1,
         limit: 10,
         customLabels: myCustomLabels,
-        populate: ["listing"]
+        populate: ["favorite"]
     };
 
 
     const favorites = await Favorite.paginate({
-        listing_type: UserType.Agent, user: req.currentUser!.id
     }, options)
 
 
@@ -38,4 +37,4 @@ router.get("/api/favorites/agent/", currentUser, requireAuth, async (req: Reques
 
 })
 
-export { router as getAgentFavoritesRouter }
+export { router as getAllFavoritesRouter }

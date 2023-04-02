@@ -18,6 +18,7 @@ interface ListingAttrs {
     listing_images: string[];
     status: ListingStatus;
     on_stand_by: string[];
+    favorites?: string[];
     listing_type: UserType;
 
 }
@@ -30,7 +31,7 @@ interface ListingDoc extends Document {
     state: string;
     city: string;
     is_verified: boolean;
-
+    favorites?: string[];
     monthly_payment: number;
     minimum_stay: number;
     about_room: string;
@@ -60,6 +61,9 @@ const listingSchema = new Schema({
         type: Number,
         required: true
     },
+    favorites: [{
+        type: Schema.Types.ObjectId, ref: 'User'
+    }],
     total_bathroom: {
         type: Number,
         required: true

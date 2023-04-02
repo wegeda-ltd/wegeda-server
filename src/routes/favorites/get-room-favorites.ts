@@ -1,12 +1,12 @@
 import { Request, Response, Router } from "express";
 
 import { currentUser, requireAuth } from "../../middlewares";
-import { Favorite } from "../../models";
-import { UserType } from "../../types";
+import { Favorite, Listing } from "../../models";
+import { FavoriteType, UserType } from "../../types";
 
 const router = Router()
 
-router.get("/api/favorites/non-agent/", currentUser, requireAuth, async (req: Request, res: Response) => {
+router.get("/api/favorites/room/", currentUser, requireAuth, async (req: Request, res: Response) => {
 
     const myCustomLabels = {
         totalDocs: 'itemCount',
@@ -24,18 +24,17 @@ router.get("/api/favorites/non-agent/", currentUser, requireAuth, async (req: Re
         page: 1,
         limit: 10,
         customLabels: myCustomLabels,
-        populate: ["listing"]
     };
 
 
-    const favorites = await Favorite.paginate({
-        listing_type: UserType.HouseSeeker, user: req.currentUser!.id
-    }, options)
 
+    const favorites = await Listing.paginate({
+        favorites: req.currentUser!.id
+    }, options)
 
 
     res.status(200).send({ message: 'Listings retrieved', favorites: favorites.itemsList, paginator: favorites.paginator })
 
 })
 
-export { router as getNonAgentFavoritesRouter }
+export { router as getRoomFavoritesRouter }

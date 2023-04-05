@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { NotFoundError } from "../../errors";
 import { currentUser, requireAuth, } from "../../middlewares";
-import { Favorite, Listing, User } from "../../models";
+import { Favorite, HouseSeeker, Listing, User } from "../../models";
 
 const router = Router()
 
@@ -19,7 +19,8 @@ router.patch("/api/favorites/:type/:id/remove", currentUser, requireAuth, async 
         })
 
     } else {
-        let favorite = await User.findById(req.params.id)
+        let favorite = await HouseSeeker.findOne({ user: req.params.id })
+
         if (!favorite) {
             throw new NotFoundError("User not found")
         }

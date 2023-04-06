@@ -27,7 +27,7 @@ router.patch("/api/listings/:listing_id/update", currentUser, requireAuth, async
         listing_title: listing_title ? listing_title : listing.listing_title,
         listing_features: listing_features ? listing_features : listing.listing_features,
         listing_images: listing_images ? listing_images : listing.listing_images,
-        status: status ? status : listing.status,
+        status: status ? status : listing.listing_status,
     })
 
     await listing.save()

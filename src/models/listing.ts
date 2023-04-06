@@ -16,7 +16,7 @@ interface ListingAttrs {
     listing_title: string;
     listing_features: string[];
     listing_images: string[];
-    status: ListingStatus;
+    listing_status: ListingStatus;
     on_stand_by: string[];
     favorites?: string[];
     listing_type: UserType;
@@ -38,7 +38,7 @@ interface ListingDoc extends Document {
     listing_title: string;
     listing_features: string[];
     listing_images: string[];
-    status: ListingStatus;
+    listing_status: ListingStatus;
     on_stand_by: string[];
     listing_type: UserType;
 

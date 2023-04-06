@@ -82,7 +82,7 @@ router.post("/api/listings/create", currentUser, requireAuth, [
         listing_title,
         listing_features,
         listing_images,
-        status: status ? status : ListingStatus.Published,
+        listing_status: status ? status : ListingStatus.Published,
         on_stand_by: [],
         listing_type: req.currentUser!.profile_type == UserType.Agent ? UserType.Agent : UserType.HouseSeeker
     })

@@ -31,7 +31,7 @@ router.get("/api/listings/user/:user_id", currentUser, requireAuth, async (req: 
     if (status) {
         listings = await Listing.paginate({
             user: req.params.user_id,
-            status: status
+            listing_status: status
         }, options)
 
     } else {

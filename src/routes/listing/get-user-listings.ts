@@ -7,6 +7,7 @@ const router = Router()
 
 router.get("/api/listings/user/:user_id", currentUser, requireAuth, async (req: Request, res: Response) => {
 
+    let status = req.query.status;
     const myCustomLabels = {
         totalDocs: 'itemCount',
         docs: 'itemsList',
@@ -26,10 +27,20 @@ router.get("/api/listings/user/:user_id", currentUser, requireAuth, async (req: 
 
     };
 
+    let listings;
+    if (status) {
+        listings = await Listing.paginate({
+            user: req.params.user_id,
+            status: status
+        }, options)
 
-    const listings = await Listing.paginate({
-        user: req.params.user_id
-    }, options)
+    } else {
+        listings = await Listing.paginate({
+            user: req.params.user_id,
+
+        }, options)
+
+    }
 
 
 

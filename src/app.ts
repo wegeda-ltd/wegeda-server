@@ -39,6 +39,7 @@ import {
     getAllChatSubscriptionRouter,
     getAllListingSubscriptionRouter,
     getuserSubscriptionRouter,
+    initializePaymentRouter,
     subscribeToChatRouter,
     subscribeToListRouter,
 } from './routes/subscription';
@@ -121,6 +122,7 @@ app.use([
     getAllChatSubscriptionRouter,
     getAllListingSubscriptionRouter,
     getuserSubscriptionRouter,
+    initializePaymentRouter,
     subscribeToChatRouter,
     subscribeToListRouter,
 

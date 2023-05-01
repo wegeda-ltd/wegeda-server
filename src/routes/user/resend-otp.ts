@@ -14,6 +14,7 @@ router.post("/api/users/resend-otp", async (req: Request, res: Response) => {
         // send otp to phone
         let phone_otp = await OtpClass.resendOtp({ phone_number })
 
+        console.log(phone_otp)
         let message = `Your verification OTP is ${phone_otp}`
         await sendSMS({ message, phone_number })
 

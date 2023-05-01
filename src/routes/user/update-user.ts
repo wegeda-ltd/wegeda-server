@@ -56,6 +56,7 @@ router.patch("/api/users/update-user", currentUser, requireAuth, async (req: Req
         if (!user) {
             return
         }
+
         user.set({
             profile_image: profile_image ? profile_image : user.profile_image,
             about_organization: about_organization ? about_organization : user.about_organization

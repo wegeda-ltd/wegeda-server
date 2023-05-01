@@ -38,13 +38,14 @@ const agentSchema = new Schema({
         required: true
     },
     profile_image: {
-        type: String
+        type: String,
+        default: "https://res.cloudinary.com/diils/image/upload/v1677774465/wegeda/user_male_wpb9rn.png"
     },
     about_organization: {
         type: String,
         required: true
     },
-    organization_type: {
+    agent_type: {
         type: String,
         required: true,
         enum: Object.values(AgentType),

@@ -26,7 +26,7 @@ router.post("/api/users/send-otp", [
 
     let message = `Your verification OTP is ${phone_otp}`
 
-
+    console.log(phone_otp)
 
     await sendSMS({ message, phone_number })
 

@@ -4,6 +4,7 @@ import { currentUser, requireAuth, validateRequest } from "../../middlewares";
 import { Agent, User } from "../../models";
 import { UserType } from "../../types";
 import jwt from 'jsonwebtoken';
+import { BadRequestError } from "../../errors";
 
 
 const router = Router()
@@ -37,6 +38,8 @@ router.post("/api/users/onboarding-agent", currentUser, requireAuth, [
         profile_type: UserType.Agent
     })
 
+
+
     await current_user.save()
 
     let userJwt = jwt.sign({
@@ -50,16 +53,22 @@ router.post("/api/users/onboarding-agent", currentUser, requireAuth, [
         jwt: userJwt
     }
 
+    const existing_agent = await Agent.findOne({ user: current_user.id })
+    if (existing_agent) {
+        throw new BadRequestError("User is already onboarded!")
+    }
 
     const agent = Agent.build({
         user: current_user.id,
         agent_type,
+        profile_image: "https://res.cloudinary.com/diils/image/upload/v1677774465/wegeda/user_male_wpb9rn.png",
         organization_name,
         about_organization,
         license_id
     })
 
     await agent.save()
+
     res.status(200).send({ message: 'Congratulations on successfully completing your profile' })
 })
 

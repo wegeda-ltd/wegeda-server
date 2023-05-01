@@ -6,6 +6,7 @@ import { UserType } from '../../types';
 const router = Router()
 
 router.get("/api/users/current-user", currentUser, async (req, res) => {
+
     if (req.currentUser) {
         let user;
         let verifications;
@@ -16,7 +17,7 @@ router.get("/api/users/current-user", currentUser, async (req, res) => {
             user = await Agent.findOne({ user: req.currentUser.id }).populate("user")
 
         }
-        res.send({ currentUser: user, verifications })
+        res.send({ currentUser: user ? user : req.currentUser, verifications })
     } else {
         res.send({ currentUser: null })
     }

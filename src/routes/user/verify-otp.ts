@@ -50,15 +50,16 @@ router.post(
       throw new BadRequestError("Incorrect Otp");
     }
 
-    let user = await User.findOne({ phone_number, email });
-    let hasEmail = await User.findOne({ email });
-    let hasPhone = await User.findOne({ phone_number });
+    const userExist = await User.findOne({ phone_number, email });
+    const userWithEmailExists = await User.findOne({ email });
+    const userWithPhoneNumberExist = await User.findOne({ phone_number });
 
-    if ((hasEmail || hasPhone) && !user) {
+    if ((userWithEmailExists || userWithPhoneNumberExist) && !userExist) {
       throw new BadRequestError("Please enter a valid email/phone combination");
     }
+
     let userJwt: string;
-    if (!user) {
+    if (!userExist) {
       let newUser = User.build({
         email,
         phone_number,
@@ -84,22 +85,21 @@ router.post(
         },
         process.env.JWT_KEY!
       );
+
+      return res
+        .status(200)
+        .send({ message: "Otp verification successful!", token: userJwt });
     }
 
     userJwt = jwt.sign(
       {
-        id: user!.id,
-        email: user!.email,
-        phone_number: user!.phone_number,
-        profile_type: user!.profile_type,
+        id: userExist!.id,
+        email: userExist!.email,
+        phone_number: userExist!.phone_number,
+        profile_type: userExist!.profile_type,
       },
       process.env.JWT_KEY!
     );
-
-    // req.session = {
-    //     jwt: userJwt
-    // }
-
     res
       .status(200)
       .send({ message: "Otp verification successful!", token: userJwt });

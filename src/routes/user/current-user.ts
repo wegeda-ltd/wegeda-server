@@ -18,7 +18,6 @@ router.get("/api/users/current-user", currentUser, async (req, res) => {
       user = await Agent.findOne({ user: req.currentUser.id }).populate("user");
     }
 
-    console.log(user, "USER");
     res.send({ currentUser: user ? user : req.currentUser, verifications });
   } else {
     res.send({ currentUser: null });

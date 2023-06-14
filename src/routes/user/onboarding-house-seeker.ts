@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { currentUser, requireAuth, validateRequest } from "../../middlewares";
-import { HouseSeeker, User } from "../../models";
+import { Agent, HouseSeeker, User } from "../../models";
 import jwt from "jsonwebtoken";
 import { UserType } from "../../types";
 import { BadRequestError } from "../../errors";
@@ -85,6 +85,15 @@ router.post(
       return;
     }
 
+    const isAgent = await Agent.find({
+      user: current_user.id,
+    });
+
+    if (isAgent) {
+      throw new BadRequestError(
+        "This account is already signed up as an Agent"
+      );
+    }
     current_user.set({
       first_name,
       last_name,
@@ -138,12 +147,10 @@ router.post(
     });
 
     await house_seeker.save();
-    res
-      .status(200)
-      .send({
-        message: "Congratulations on successfully completing your profile",
-        token: userJwt,
-      });
+    res.status(200).send({
+      message: "Congratulations on successfully completing your profile",
+      token: userJwt,
+    });
   }
 );
 

@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { currentUser, requireAuth, validateRequest } from "../../middlewares";
-import { Agent, User } from "../../models";
+import { Agent, HouseSeeker, User } from "../../models";
 import { UserType } from "../../types";
 import jwt from "jsonwebtoken";
 import { BadRequestError } from "../../errors";
@@ -22,8 +22,8 @@ router.post(
       .isLength({ min: 2 })
       .withMessage("last name is a required field"),
     body("license_id")
-      .isArray({ min: 2 })
-      .withMessage("upload images of your license id"),
+      .isArray({ min: 1 })
+      .withMessage("upload your license id"),
     body("agent_type")
       .trim()
       .notEmpty()
@@ -54,6 +54,15 @@ router.post(
       return;
     }
 
+    const isHouseSeeker = await HouseSeeker.find({
+      user: current_user.id,
+    });
+
+    if (isHouseSeeker) {
+      throw new BadRequestError(
+        "This account is already signed up as a House Seeker"
+      );
+    }
     current_user.set({
       first_name,
       last_name,
@@ -93,12 +102,10 @@ router.post(
 
     await agent.save();
 
-    res
-      .status(200)
-      .send({
-        message: "Congratulations on successfully completing your profile",
-        token: userJwt,
-      });
+    res.status(200).send({
+      message: "Congratulations on successfully completing your profile",
+      token: userJwt,
+    });
   }
 );
 

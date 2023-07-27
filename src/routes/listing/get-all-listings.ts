@@ -19,7 +19,6 @@ router.get(
   async (req: Request, res: Response) => {
     const { state, room_type, budget_range, city } = req.query;
 
-    console.log(state, room_type, budget_range, city, "FIELDS");
 
     const myCustomLabels = {
       totalDocs: "itemCount",

@@ -10,14 +10,14 @@ interface UserAttrs {
     email: string;
     phone_number: string;
     profile_type: UserType;
-
+    profile_image: string;
 }
 
 interface UserDoc extends Document {
     first_name: string;
     last_name: string;
     email: string;
-
+    profile_image: string;
     phone_number: string;
     profile_type: UserType;
 
@@ -35,6 +35,9 @@ const userSchema = new Schema({
     last_name: {
         type: String,
         required: true
+    },
+    profile_image: {
+        type: String,
     },
     email: {
         type: String,

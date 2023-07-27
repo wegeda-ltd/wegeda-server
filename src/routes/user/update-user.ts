@@ -31,7 +31,6 @@ router.patch(
       return;
     }
 
-    console.log(profile_image, "PROFILE");
     if (current_user.profile_type == UserType.HouseSeeker) {
       const user = await HouseSeeker.findOne({ user: current_user.id });
       if (!user) {
@@ -69,7 +68,11 @@ router.patch(
 
       await user.save();
     }
+    current_user.set({
+      profile_image
+    })
 
+    await current_user.save()
     res.status(200).send({ message: "Profile updated" });
   }
 );

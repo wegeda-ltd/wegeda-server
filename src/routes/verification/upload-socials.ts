@@ -38,7 +38,7 @@ router.post("/api/verification/upload-socials", currentUser, requireAuth, [
         await newVerification.save()
     } else {
         verification.set({
-            occupation_verified: VerificationStatus.Pending
+            social_media_verified: VerificationStatus.Pending
 
         })
 

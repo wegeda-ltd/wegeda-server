@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { BadRequestError, NotFoundError } from "../../errors";
 import { validateRequest } from "../../middlewares";
-import { Notification, User } from "../../models";
+import { Agent, HouseSeeker, Notification, User, Verification } from "../../models";
 import { OtpClass, sendMail, sendSMS } from "../../services";
 import jwt from "jsonwebtoken";
 import { UserType } from "../../types";
@@ -27,7 +27,6 @@ router.post(
   async (req: Request, res: Response) => {
     let { email, phone_number, otp, type } = req.body;
 
-    console.log(email, phone_number, otp, type, "ENTERED HERE");
     if (phone_number && phone_number.length == 10) {
       if (
         phone_number[0] == "8" ||
@@ -102,9 +101,30 @@ router.post(
     );
 
     console.log(userJwt, "USER JWT")
+
+    // POPULATE CURRENT USER
+    const current_user = await User.findById(userExist.id)
+    let user;
+    let verifications;
+    if (userExist.profile_type === UserType.HouseSeeker) {
+      user = await HouseSeeker.findOne({ user: userExist.id }).populate(
+        "user"
+      );
+      verifications = await Verification.findOne({ user: userExist.id });
+    } else {
+      user = await Agent.findOne({ user: userExist.id }).populate("user");
+    }
+
+    if (user?.profile_image && !current_user?.profile_image) {
+      current_user?.set({
+        profile_image: user?.profile_image
+      })
+
+      await current_user?.save()
+    }
     res
       .status(200)
-      .send({ message: "Otp verification successful!", token: userJwt });
+      .send({ message: "Otp verification successful!", token: userJwt, user });
   }
 );
 

@@ -100,6 +100,8 @@ router.post(
       },
       process.env.JWT_KEY!
     );
+
+    console.log(userJwt, "USER JWT")
     res
       .status(200)
       .send({ message: "Otp verification successful!", token: userJwt });

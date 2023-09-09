@@ -6,6 +6,7 @@ import { UserType } from "../../types";
 const router = Router();
 
 router.get("/api/users/current-user", currentUser, async (req, res) => {
+
   if (req.currentUser) {
     const current_user = await User.findById(req.currentUser.id)
     let user;

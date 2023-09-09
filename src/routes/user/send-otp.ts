@@ -18,7 +18,6 @@ router.post(
   async (req: Request, res: Response) => {
     let { email, phone_number } = req.body;
 
-    console.log("INSIDE LIFE");
     if (phone_number && phone_number.length == 10) {
       if (
         phone_number[0] == "8" ||
@@ -34,12 +33,14 @@ router.post(
 
     let message = `Your verification OTP is ${phone_otp}`;
 
-    console.log(phone_otp, "PHONE");
 
     await sendSMS({ message, phone_number });
 
     let email_otp = await OtpClass.generateOtp({ email });
     message = `Your verification OTP is ${email_otp}`;
+
+
+    console.log(phone_otp, "PHONE \n", email_otp, "EMAIL");
 
     await sendMail({
       message,

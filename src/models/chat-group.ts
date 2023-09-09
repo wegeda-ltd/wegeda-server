@@ -2,17 +2,15 @@ import { Schema, model, Document, PaginateModel } from "mongoose";
 import paginate from 'mongoose-paginate-v2';
 
 interface ChatGroupAttrs {
-    user_1: string;
-    user_2: string;
+    users: string[];
     messages?: string[];
-
+    name: string;
 }
 
 interface ChatGroupDoc extends Document {
-    user_1: string;
-    user_2: string;
-    messages?: string[];
-
+    users: string[];
+    messages: string[];
+    name: string;
     createdAt: string;
     updatedAt: string;
 
@@ -23,21 +21,19 @@ interface ChatGroupModel extends PaginateModel<ChatGroupDoc> {
 }
 
 const chatGroupSchema = new Schema({
-    user_1: {
+    users: [{
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    },
-
-    user_2: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
+    }],
+    name: {
+        type: String,
         required: true
     },
 
     messages: [{
         type: Schema.Types.ObjectId,
-        ref: 'ChatMessage'
+        ref: 'Chat-Message'
     }]
 
 }, {

@@ -78,6 +78,7 @@ import {
     verifyOccupationRouter,
     verifySocialsRouter
 } from './routes/verification';
+import { getMessageDetailsRouter, getMessagesRouter, sendMessageRouter } from './routes/messaging';
 
 
 const app = express();
@@ -157,7 +158,13 @@ app.use([
     verifyIncomeRouter,
     verifyNinRouter,
     verifyOccupationRouter,
-    verifySocialsRouter
+    verifySocialsRouter,
+
+
+    // MESSAGING
+    sendMessageRouter,
+    getMessagesRouter,
+    getMessageDetailsRouter
 ])
 app.get("/", (req, res) => {
 

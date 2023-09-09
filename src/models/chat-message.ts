@@ -3,17 +3,19 @@ import paginate from 'mongoose-paginate-v2';
 
 interface ChatMessageAttrs {
     text?: string;
+    from: string;
+    group: string;
     images?: string[];
-    chat_group: string;
-    is_read?: boolean;
+    read_by: string[];
 
 }
 
 interface ChatMessageDoc extends Document {
     text?: string;
+    from: string;
+    group: string;
     images?: string[];
-    chat_group: string;
-    is_read?: boolean;
+    read_by: string[];
     createdAt: string;
     updatedAt: string;
 
@@ -24,17 +26,22 @@ interface ChatMessageModel extends PaginateModel<ChatMessageDoc> {
 }
 
 const chatMessageSchema = new Schema({
-    chat_group: {
-        type: Schema.Types.ObjectId,
-        ref: 'ChatGroup',
-        required: true
-    },
-
     text: {
         type: String,
     },
-    is_read: {
-        type: Boolean,
+    read_by: [{
+        type: String,
+    }],
+    from: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    group: {
+        type: Schema.Types.ObjectId,
+        ref: 'Chat-Group',
+        required: true
+
     },
     images: [{
         type: String,

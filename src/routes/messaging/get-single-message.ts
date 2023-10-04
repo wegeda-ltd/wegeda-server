@@ -9,6 +9,12 @@ router.get(
     currentUser,
     requireAuth,
     async (req: Request, res: Response) => {
+
+        const pageSize: any = req.query.pageSize || 10
+        const page: any = req.query.page || 1
+        const skip = (page - 1) * pageSize;
+
+
         await ChatMessage.updateMany({
             group: req.params.id,
             read_by: { $ne: req.currentUser!.id } // Check if currentUser ID is not already in the read_by array
@@ -20,19 +26,36 @@ router.get(
         const chat = await ChatMessage.find({
             group: req.params.id
         }).populate("from")
-
-        // const chat = await ChatGroup.findOne({
-        //     group: req.params.id,
-        // }).populate({
-        //     path: 'users',
-        //     select: 'first_name last_name profile_image'
-        // }).populate({
-        //     path: "messages",
-        // })
+            .populate({
+                path: "group",
+                select: "users",
+                populate: {
+                    path: "users",
+                    select: "status"
+                }
 
 
+            }).sort({ createdAt: -1 })
+            .skip(skip).limit(pageSize)
 
-        return res.send({ message: "Messages retrieved", chat })
+
+        const totalMsgs = await ChatMessage.countDocuments({
+            group: req.params.id
+        });
+        const totalPages = Math.ceil(totalMsgs / pageSize);
+        const nextPage = totalPages > page ? parseInt(page) + 1 : null;
+
+
+        return res.send({
+            message: "Messages retrieved",
+            chat,
+            pagination: {
+                pageSize,
+                currentPage: page,
+                totalPages,
+                nextPage
+            }
+        })
     }
 );
 

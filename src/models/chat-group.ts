@@ -4,12 +4,16 @@ import paginate from 'mongoose-paginate-v2';
 interface ChatGroupAttrs {
     users: string[];
     messages?: string[];
+    admins?: string[];
     name: string;
+    isGroup?: boolean;
 }
 
 interface ChatGroupDoc extends Document {
     users: string[];
-    messages: string[];
+    messages?: string[];
+    admins?: string[];
+    isGroup: boolean
     name: string;
     createdAt: string;
     updatedAt: string;
@@ -26,9 +30,18 @@ const chatGroupSchema = new Schema({
         ref: 'User',
         required: true
     }],
+    admins: [{
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+
+    }],
     name: {
         type: String,
         required: true
+    },
+    isGroup: {
+        type: Boolean,
+        default: false
     },
 
     messages: [{

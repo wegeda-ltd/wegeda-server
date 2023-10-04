@@ -31,6 +31,8 @@ router.post(
 
         const chatUsers = [req.currentUser?.id, ...users]
 
+        console.log(users, "CHAT USERS")
+
         let chatGroup: any = await ChatGroup.findOne({
             users: { $all: chatUsers }     // , ...users]
         })
@@ -57,15 +59,26 @@ router.post(
 
         chatGroup.messages.push(message.id)
 
-        const messages = await ChatMessage.find({
-            group: chatGroup.id
-        }).populate("from")
+        const chat = await ChatMessage.findById(message.id).populate("from")
+            .populate({
+                path: "group",
+                select: "users",
+                populate: {
+                    path: "users",
+                    select: "status"
+                }
+
+
+            })
+        // const messages = await ChatMessage.find({
+        //     group: chatGroup.id
+        // }).populate("from")
 
 
 
 
         await chatGroup.save()
-        return res.send({ message: "Message sent", messages })
+        return res.send({ message: "Message sent", chat })
 
     }
 );

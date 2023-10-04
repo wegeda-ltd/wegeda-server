@@ -11,78 +11,32 @@ router.get(
     requireAuth,
     async (req: Request, res: Response) => {
 
+        const pageSize: any = req.query.pageSize || 10
+        const page: any = req.query.page || 1
+        const skip = (page - 1) * pageSize;
+
         const messages = await ChatGroup.find({
             users: req.currentUser!.id
         }).populate({
             path: "messages",
             options: { sort: { createdAt: -1 } }
-        }).populate({ path: "users", select: 'first_name last_name profile_image' }).sort({ createdAt: -1 })
-        // const messages = await ChatGroup.find({
-        //     users: req.currentUser!.id
-        // }).populate({
-        //     path: 'users',
-        //     select: 'first_name last_name profile_image'
-        // }).populate({
-        //     path: 'messages',
-        //     match: { is_read: false },
-        // })
+        }).populate({ path: "users", select: 'first_name last_name profile_image status' }).sort({ createdAt: -1 })
+            .skip(skip).limit(pageSize)
 
-        // const messages =
-        //     await ChatGroup.aggregate([
-        //         {
-        //             $lookup: {
-        //                 from: 'users', localField: 'users',
-        //                 foreignField: '_id',
-        //                 as: 'userDetails',
-        //             },
-        //         },
-        //         // {
-        //         //     $unwind: '$userDetails',
-        //         // },
-        //         {
-        //             $lookup: {
-        //                 from: 'chat-messages', localField: 'messages',
-        //                 foreignField: '_id',
-        //                 as: 'messages',
-        //             },
-        //         },
-        //         {
-        //             $addFields: {
-        //                 unreadMessageCount: {
-        //                     $size: {
-        //                         $filter: {
-        //                             input: '$messages',
-        //                             as: 'message',
-        //                             cond: { $eq: ['$$message.is_read', false] },
-        //                         },
-        //                     },
-        //                 },
-        //             },
-        //         },
-        //         {
-        //             $unwind: '$messages',
-        //         },
-        //         {
-        //             $sort: {
-        //                 'messages.createdAt': -1,
-        //             },
-        //         },
-        //         {
-        //             $group: {
-        //                 _id: '$_id',
-        //                 users: { $first: '$userDetails' },
-        //                 messages: { $push: '$messages' },
-        //                 unreadMessageCount: { $first: '$unreadMessageCount' },
-        //                 createdAt: { $first: '$createdAt' },
-        //             },
-        //         },
-        //         {
-        //             $sort: {
-        //                 createdAt: 1, // Sort groups based on createdAt
-        //             },
-        //         },
-        //     ]).sort({ createdAt: -1 })
-        return res.send({ message: "Messages retrieved", messages })
+
+        const totalMsgs = await ChatGroup.countDocuments({ users: req.currentUser!.id });
+        const totalPages = Math.ceil(totalMsgs / pageSize);
+        const nextPage = totalPages > page ? page + 1 : null;
+
+        return res.send({
+            message: "Messages retrieved",
+            messages,
+            pagination: {
+                currentPage: page,
+                totalPages,
+                nextPage
+            }
+        })
     }
 );
 

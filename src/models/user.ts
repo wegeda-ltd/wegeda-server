@@ -7,6 +7,7 @@ import paginate from 'mongoose-paginate-v2';
 interface UserAttrs {
     first_name: string;
     last_name: string;
+    status?: "online" | "offline";
     email: string;
     phone_number: string;
     profile_type: UserType;
@@ -17,6 +18,7 @@ interface UserDoc extends Document {
     first_name: string;
     last_name: string;
     email: string;
+    status: "online" | "offline";
     profile_image?: string;
     phone_number: string;
     profile_type: UserType;
@@ -38,6 +40,10 @@ const userSchema = new Schema({
     },
     profile_image: {
         type: String,
+    },
+    status: {
+        type: String,
+        default: "offline"
     },
     email: {
         type: String,

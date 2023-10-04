@@ -13,7 +13,7 @@ if (!process.env.INFOBIP_API_KEY) {
 export const sendSMS = async ({ message, phone_number }: SMSProps) => {
     try {
         axios.defaults.headers['Authorization'] = `App ${process.env.INFOBIP_API_KEY}`
-        await axios.post('https://2kq2mw.api.infobip.com/sms/2/text/advanced', {
+        const resp = await axios.post('https://2kq2mw.api.infobip.com/sms/2/text/advanced', {
             "messages": [
                 {
                     "destinations": [
@@ -30,6 +30,7 @@ export const sendSMS = async ({ message, phone_number }: SMSProps) => {
                 }
             ]
         })
+        console.log(resp.data.messages[0].status, "RESPONSE")
 
         return true
     } catch (error) {

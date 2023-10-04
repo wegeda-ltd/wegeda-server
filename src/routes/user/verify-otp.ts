@@ -100,7 +100,6 @@ router.post(
       process.env.JWT_KEY!
     );
 
-    console.log(userJwt, "USER JWT")
 
     // POPULATE CURRENT USER
     const current_user = await User.findById(userExist.id)

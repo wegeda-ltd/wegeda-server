@@ -2,6 +2,8 @@ import { Request, Response, Router } from "express";
 import { body } from "express-validator";
 import { validateRequest } from "../../middlewares";
 import { OtpClass, sendMail, sendSMS } from "../../services";
+import { BadRequestError } from "../../errors";
+import { User } from "../../models";
 
 const router = Router();
 
@@ -28,10 +30,18 @@ router.post(
       }
     }
 
+
+    const userExist = await User.findOne({ phone_number, email });
+    const userWithEmailExists = await User.findOne({ email });
+    const userWithPhoneNumberExist = await User.findOne({ phone_number });
+
+    if ((userWithEmailExists || userWithPhoneNumberExist) && !userExist) {
+      throw new BadRequestError("Please enter a valid email/phone combination");
+    }
     // send otp to phone
     let phone_otp = await OtpClass.generateOtp({ phone_number });
 
-    let message = `Your verification OTP is ${phone_otp}`;
+    let message = `Your WEGEDA verification OTP is ${phone_otp}`;
 
 
     await sendSMS({ message, phone_number });
@@ -45,7 +55,7 @@ router.post(
     await sendMail({
       message,
       email,
-      subject: `Your Verification OTP is ${email_otp}`,
+      subject: `Your WEGEDA Verification OTP is ${email_otp}`,
     });
 
     res.status(200).send({ message: "Otp sent to your sms and email" });

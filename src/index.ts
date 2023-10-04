@@ -5,6 +5,7 @@ import { config } from 'dotenv'
 import { app } from "./app"
 import { Server } from "socket.io"
 import axios from "axios";
+import { User } from "./models";
 
 const server = http.createServer(app);
 const io = new Server(server)
@@ -44,14 +45,29 @@ const users = new Map();
 // SOCKET
 io.use((socket: any, next) => {
     if (socket.handshake.query) {
-        let callerId = socket.handshake.query.callerId;
-        socket.user = callerId;
+        let user = socket.handshake.query.user_id;
+
+        socket.user = user;
         next();
     }
 })
 
-io.on("connection", (socket) => {
-    console.log("A user connected")
+io.on("connection", async (socket) => {
+    const sock: any = socket
+    let user: any = {};
+    if (sock.user !== "undefined") {
+        console.log(sock.user, "A user connected")
+
+        user = await User.findById(sock.user)
+        if (user?.id) {
+            user.set({
+                status: "online"
+            })
+
+            await user.save()
+
+        }
+    }
     socket.on("getMessages", async (token) => {
 
         try {
@@ -80,7 +96,7 @@ io.on("connection", (socket) => {
             })
 
             const messages = response.data
-            io.emit("chatMessages", messages)
+            io.emit("chats", messages)
 
             return messages
         } catch (error: any) {
@@ -104,51 +120,39 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on('join', (userId) => {
-        // Store the socket connection using the user ID as a key
-        users.set(userId, socket);
-        console.log(`User ${userId} joined`);
-    });
+    socket.on("startCall", async ({ user_id, type, group }) => {
+        const sock: any = socket
+        console.log(group, "GROUP")
+        const user = await User.findById(sock.user)
 
-    socket.on('call-user', ({ from, to, offer }) => {
+        io.emit("incomingCall", { user, group, type, to: user_id })
+        // socket.to()
+    })
+    socket.on("callRejected", ({ receiver, caller }) => {
+        io.emit("callRejected", { receiver, caller })
+    })
+    socket.on("callAccepted", ({ receiver, caller, group }) => {
+        console.log("CALL ACCEPTED", receiver, caller, group)
+        io.emit("callAccepted", { receiver, caller, group })
+    })
 
-        // Send a call request to the recipient
-        const recipientSocket = users.get(to);
-        const callerSocket = users.get(from);
+    socket.on('disconnect', async () => {
 
-        if (recipientSocket) {
-            recipientSocket.emit('call-made', { signal: offer, from });
+        if (user?.id) {
+            user.set({
+                status: "offline"
+            })
+
+            await user.save()
         }
-    });
-
-    socket.on('make-answer', ({ answer, to }) => {
-        // Send the answer to the caller
-        const callerSocket = users.get(to);
-
-        if (callerSocket) {
-            callerSocket.emit('answer-made', { answer });
-        }
-    });
-
-    socket.on('ice-candidate', ({ candidate, to }) => {
-
-        console.log(candidate, "ICE CANDIDATE OOO")
-        // Send ICE candidate to the other user
-        const recipientSocket = users.get(to);
-
-        if (recipientSocket) {
-            recipientSocket.emit('ice-candidate', { candidate });
-        }
-    });
-
-    socket.on('disconnect', () => {
         // Remove the socket connection when a user disconnects
-        users.forEach((userSocket, userId) => {
-            if (userSocket === socket) {
-                users.delete(userId);
-                console.log(`User ${userId} disconnected`);
-            }
-        });
+        // users.forEach((userSocket, userId) => {
+        //     if (userSocket === socket) {
+        //         users.delete(userId);
+        //         console.log(`User ${userId} disconnected`);
+        //     }
+        // });
+        console.log("User disconnected")
     });
 });
 

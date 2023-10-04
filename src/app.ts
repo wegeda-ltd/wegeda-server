@@ -78,7 +78,7 @@ import {
     verifyOccupationRouter,
     verifySocialsRouter
 } from './routes/verification';
-import { getMessageDetailsRouter, getMessagesRouter, sendMessageRouter } from './routes/messaging';
+import { createNewGroupRouter, getChatUsersRouter, getMessageDetailsRouter, getMessagesRouter, sendMessageRouter } from './routes/messaging';
 
 
 const app = express();
@@ -163,8 +163,10 @@ app.use([
 
     // MESSAGING
     sendMessageRouter,
+    getChatUsersRouter,
     getMessagesRouter,
-    getMessageDetailsRouter
+    getMessageDetailsRouter,
+    createNewGroupRouter
 ])
 app.get("/", (req, res) => {
 

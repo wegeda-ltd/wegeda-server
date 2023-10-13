@@ -59,7 +59,24 @@ router.post(
 
         chatGroup.messages.push(message.id)
 
-        const chat = await ChatMessage.findById(message.id).populate("from")
+        // const chat = await ChatMessage.findById(message.id).populate("from")
+        //     .populate({
+        //         path: "group",
+        //         select: "users",
+        //         populate: {
+        //             path: "users",
+        //             select: "status"
+        //         }
+
+        //     })
+        const pageSize: any = 10
+        const page: any = 1
+        const skip = (page - 1) * pageSize;
+
+
+        const chat = await ChatMessage.find({
+            group: chatGroup.id
+        }).populate("from")
             .populate({
                 path: "group",
                 select: "users",
@@ -69,7 +86,28 @@ router.post(
                 }
 
 
-            })
+            }).sort({ createdAt: 1 })
+            .skip(skip).limit(pageSize)
+
+        await chatGroup.save()
+
+        const totalMsgs = await ChatMessage.countDocuments({
+            group: req.params.id
+        });
+        const totalPages = Math.ceil(totalMsgs / pageSize);
+        const nextPage = totalPages > page ? parseInt(page) + 1 : null;
+
+
+        return res.send({
+            message: "Messages retrieved",
+            chat: chat.reverse(),
+            pagination: {
+                pageSize,
+                currentPage: page,
+                totalPages,
+                nextPage
+            }
+        })
         // const messages = await ChatMessage.find({
         //     group: chatGroup.id
         // }).populate("from")
@@ -77,8 +115,7 @@ router.post(
 
 
 
-        await chatGroup.save()
-        return res.send({ message: "Message sent", chat })
+        // return res.send({ message: "Message sent", chat })
 
     }
 );

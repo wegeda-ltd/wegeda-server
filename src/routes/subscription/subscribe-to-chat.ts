@@ -28,6 +28,7 @@ router.post("/api/subscriptions/chat-subscription/subscribe", currentUser, requi
             reference
         })
 
+
         if (!payment) {
             throw new NotFoundError('Payment not found!')
         }
@@ -41,7 +42,6 @@ router.post("/api/subscriptions/chat-subscription/subscribe", currentUser, requi
         const exisitingSubscription = await UserSubscription.findOne({ user: req.currentUser!.id, subscription: payment.subscription_id })
 
         if (exisitingSubscription) {
-            console.log("existing subscription")
 
             exisitingSubscription.set({
                 amount_left: exisitingSubscription.amount_left + chat_subscription.subscription_maximum_chat,
@@ -62,6 +62,7 @@ router.post("/api/subscriptions/chat-subscription/subscribe", currentUser, requi
             duration: payment.duration
         })
 
+        console.log("DONE")
         await user_subscription.save()
         res.status(200).send({ message: 'Subscribed successfully' })
 

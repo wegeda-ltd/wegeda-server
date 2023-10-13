@@ -11,10 +11,8 @@ router.get("/api/subscriptions/user-subscription", currentUser, requireAuth,
 
         let user_subscription = await UserSubscription.findOne({ user: req.currentUser!.id })
 
-
-        console.log(user_subscription)
         if (!user_subscription) {
-            return res.status(200).send({ message: 'Subscription retrieved', user_subscription: null, subscription: null })
+            return res.status(200).send({ message: 'Subscription retrieved', account_type: req.currentUser!.profile_type, user_subscription: null, subscription: null })
         }
         let subscription = req.currentUser!.profile_type == UserType.HouseSeeker ?
             await ChatSubscription.findById(user_subscription.subscription) :

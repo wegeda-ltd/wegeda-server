@@ -15,6 +15,7 @@ router.get(
         const skip = (page - 1) * pageSize;
 
 
+
         await ChatMessage.updateMany({
             group: req.params.id,
             read_by: { $ne: req.currentUser!.id } // Check if currentUser ID is not already in the read_by array
@@ -48,7 +49,7 @@ router.get(
 
         return res.send({
             message: "Messages retrieved",
-            chat,
+            chat: chat.reverse(),
             pagination: {
                 pageSize,
                 currentPage: page,

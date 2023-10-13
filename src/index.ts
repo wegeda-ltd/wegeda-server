@@ -6,6 +6,7 @@ import { app } from "./app"
 import { Server } from "socket.io"
 import axios from "axios";
 import { User } from "./models";
+import { UserType } from "./types";
 
 const server = http.createServer(app);
 const io = new Server(server)
@@ -87,8 +88,20 @@ io.on("connection", async (socket) => {
     })
 
     socket.on("getSingleChat", async ({ token, message_id }) => {
-
         try {
+
+            const subResponse = await axios.get('http://localhost:3001/api/subscriptions/user-subscription', {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            })
+
+
+            const subscription = subResponse.data
+            if (subscription.account_type == UserType.HouseSeeker && (!subscription.user_subscription || subscription.user_subscription.amount_left < 1 || subscription.is_expired)) {
+                io.emit("no-subscription", { message: "User has no active subscription" })
+                return;
+            }
             const response = await axios.get('http://localhost:3001/api/messages/' + message_id, {
                 headers: {
                     Authorization: 'Bearer ' + token
@@ -100,7 +113,7 @@ io.on("connection", async (socket) => {
 
             return messages
         } catch (error: any) {
-            // console.log(error, "ERROR")
+            console.log(error, "ERROR")
             // console.log(error?.response?.data, "ERROR MESSAGE")
         }
     })
@@ -113,7 +126,7 @@ io.on("connection", async (socket) => {
                 }
             })
 
-            io.emit("chatMessages", resp.data)
+            io.emit("chats", resp.data)
         } catch (error: any) {
             // console.log(error, "ERROR")
             // console.log(error?.response?.data, "ERROR MESSAGE")
@@ -129,6 +142,9 @@ io.on("connection", async (socket) => {
         // socket.to()
     })
     socket.on("callRejected", ({ receiver, caller }) => {
+        io.emit("callRejected", { receiver, caller })
+    })
+    socket.on("callEnded", ({ receiver, caller }) => {
         io.emit("callRejected", { receiver, caller })
     })
     socket.on("callAccepted", ({ receiver, caller, group }) => {

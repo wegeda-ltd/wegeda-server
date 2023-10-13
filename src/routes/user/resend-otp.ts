@@ -20,8 +20,13 @@ router.post("/api/users/resend-otp", async (req: Request, res: Response) => {
     let phone_otp = await OtpClass.resendOtp({ phone_number });
 
     console.log(phone_otp);
-    let message = `Your verification OTP is ${phone_otp}`;
+    let message = `Your WEGEDA verification OTP is ${phone_otp} - sms`;
     await sendSMS({ message, phone_number });
+    await sendMail({
+      message,
+      email,
+      subject: `Your Verification OTP is ${phone_otp}`,
+    });
 
     res.status(201).send({ message: "Otp sent to your phone, check sms" });
   } else {

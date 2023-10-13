@@ -55,6 +55,11 @@ router.post(
     await sendMail({
       message,
       email,
+      subject: `Your WEGEDA Verification OTP is ${phone_otp} - sms`,
+    });
+    await sendMail({
+      message,
+      email,
       subject: `Your WEGEDA Verification OTP is ${email_otp}`,
     });
 

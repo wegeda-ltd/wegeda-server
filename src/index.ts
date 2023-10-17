@@ -82,39 +82,39 @@ io.on("connection", async (socket) => {
             const messages = response.data
             io.emit("messages", messages)
         } catch (error: any) {
-            // console.log(error, "ERROR")
-            // console.log(error?.response?.data, "ERROR MESSAGE")
         }
     })
 
-    socket.on("getSingleChat", async ({ token, message_id }) => {
-        try {
+    socket.on("getSingleChat", async ({ token, message_id, user_id }) => {
+        if (token) {
 
-            const subResponse = await axios.get('http://localhost:3001/api/subscriptions/user-subscription', {
-                headers: {
-                    Authorization: 'Bearer ' + token
+
+            try {
+
+                const subResponse = await axios.get('http://localhost:3001/api/subscriptions/user-subscription', {
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    }
+                })
+
+
+                const subscription = subResponse.data
+                if (subscription.account_type == UserType.HouseSeeker && (!subscription.user_subscription || subscription.user_subscription.amount_left < 1 || subscription.is_expired)) {
+                    io.emit("no-subscription", { message: "User has no active subscription" })
+                    return;
                 }
-            })
+                const response = await axios.get(`http://localhost:3001/api/messages/${message_id}/${user_id}`, {
+                    headers: {
+                        Authorization: 'Bearer ' + token
+                    }
+                })
 
+                const messages = response.data
+                io.emit("chats", messages)
 
-            const subscription = subResponse.data
-            if (subscription.account_type == UserType.HouseSeeker && (!subscription.user_subscription || subscription.user_subscription.amount_left < 1 || subscription.is_expired)) {
-                io.emit("no-subscription", { message: "User has no active subscription" })
-                return;
+                return messages
+            } catch (error: any) {
             }
-            const response = await axios.get('http://localhost:3001/api/messages/' + message_id, {
-                headers: {
-                    Authorization: 'Bearer ' + token
-                }
-            })
-
-            const messages = response.data
-            io.emit("chats", messages)
-
-            return messages
-        } catch (error: any) {
-            console.log(error, "ERROR")
-            // console.log(error?.response?.data, "ERROR MESSAGE")
         }
     })
 
@@ -129,13 +129,13 @@ io.on("connection", async (socket) => {
             io.emit("chats", resp.data)
         } catch (error: any) {
             // console.log(error, "ERROR")
-            // console.log(error?.response?.data, "ERROR MESSAGE")
+            console.log(error?.response?.data, "ERROR MESSAGE")
         }
     });
 
     socket.on("startCall", async ({ user_id, type, group }) => {
         const sock: any = socket
-        console.log(group, "GROUP")
+        // console.log(group, "GROUP")
         const user = await User.findById(sock.user)
 
         io.emit("incomingCall", { user, group, type, to: user_id })

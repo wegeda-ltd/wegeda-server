@@ -19,6 +19,8 @@ import {
     getAllListingsRouter,
     getAllNonAgentListingRouter,
     getListingByIdRouter,
+    getListingStandbyRouter,
+    getSimilarListingsRouter,
     getUserListingRouter,
     standbyOnListingRouter,
     updateListingRouter
@@ -105,6 +107,8 @@ app.use([
     getAllListingsRouter,
     getAllNonAgentListingRouter,
     getListingByIdRouter,
+    getListingStandbyRouter,
+    getSimilarListingsRouter,
     getUserListingRouter,
     standbyOnListingRouter,
     updateListingRouter,

@@ -5,7 +5,7 @@ import { ChatGroup, ChatMessage, } from "../../models";
 const router = Router();
 
 router.get(
-    "/api/messages/:id/",
+    "/api/messages/:id/:userId",
     currentUser,
     requireAuth,
     async (req: Request, res: Response) => {
@@ -14,49 +14,73 @@ router.get(
         const page: any = req.query.page || 1
         const skip = (page - 1) * pageSize;
 
+        const chatGroup = await ChatGroup.findOne({
+            users: [req.currentUser?.id, req.params.userId]
+        })
 
 
-        await ChatMessage.updateMany({
-            group: req.params.id,
-            read_by: { $ne: req.currentUser!.id } // Check if currentUser ID is not already in the read_by array
-        },
-            {
-                $addToSet: { read_by: req.currentUser!.id }
+        const groupId = req.params.id != "undefined" ? req.params.id : chatGroup?.id;
+
+        if (groupId) {
+            await ChatMessage.updateMany({
+                group: groupId,
+                read_by: { $ne: req.currentUser!.id }
+            },
+                {
+                    $addToSet: { read_by: req.currentUser!.id }
+                })
+
+        }
+
+
+        if (groupId) {
+            const chat = await ChatMessage.find(
+                { group: groupId }
+            ).populate("from")
+                .populate({
+                    path: "group",
+                    select: "users",
+                    populate: {
+                        path: "users",
+                        select: "status"
+                    }
+
+
+                }).sort({ createdAt: -1 })
+                .skip(skip).limit(pageSize)
+
+
+            const totalMsgs = await ChatMessage.countDocuments({
+                group: groupId
+            });
+            const totalPages = Math.ceil(totalMsgs / pageSize);
+            const nextPage = totalPages > page ? parseInt(page) + 1 : null;
+
+
+            return res.send({
+                message: "Messages retrieved",
+                chat: chat.reverse(),
+                pagination: {
+                    pageSize,
+                    currentPage: page,
+                    totalPages,
+                    nextPage
+                }
             })
 
-        const chat = await ChatMessage.find({
-            group: req.params.id
-        }).populate("from")
-            .populate({
-                path: "group",
-                select: "users",
-                populate: {
-                    path: "users",
-                    select: "status"
+        } else {
+            return res.send({
+                message: "Testing 1 2 3",
+                chat: [],
+                pagination: {
+                    pageSize,
+                    currentPage: 1,
+                    totalPages: 0,
+                    nextPag: null
                 }
+            })
+        }
 
-
-            }).sort({ createdAt: -1 })
-            .skip(skip).limit(pageSize)
-
-
-        const totalMsgs = await ChatMessage.countDocuments({
-            group: req.params.id
-        });
-        const totalPages = Math.ceil(totalMsgs / pageSize);
-        const nextPage = totalPages > page ? parseInt(page) + 1 : null;
-
-
-        return res.send({
-            message: "Messages retrieved",
-            chat: chat.reverse(),
-            pagination: {
-                pageSize,
-                currentPage: page,
-                totalPages,
-                nextPage
-            }
-        })
     }
 );
 

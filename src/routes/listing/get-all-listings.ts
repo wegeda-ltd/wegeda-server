@@ -59,21 +59,10 @@ router.get(
         $gte: parseFloat(budget[0]),
       };
     }
-    // let listings;
-    // if (state && room_type && budget_range) {
-    //   listings = await Listing.paginate(
-    //     {
-    //       state,
-    //       room_type,
-    //       budget: { $lte: budget_range[0], $gte: budget_range[1] },
-    //     },
-    //     options
-    //   );
-    // } else {
 
     const listings = await Listing.paginate({ ...filters }, options);
 
-    // }
+
 
     res.status(200).send({
       message: "Listings retrieved",

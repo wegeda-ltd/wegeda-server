@@ -23,7 +23,7 @@ router.post(
             images
         } = req.body;
 
-        const user = await User.findById(users[0])
+        const user = await User.findById(users.filter((user: string) => user !== req.currentUser!.id)[0])
 
         if (!text && !images) {
             throw new BadRequestError("Please send a message")
@@ -31,7 +31,6 @@ router.post(
 
         const chatUsers = [req.currentUser?.id, ...users]
 
-        console.log(users, "CHAT USERS")
 
         let chatGroup: any = await ChatGroup.findOne({
             users: { $all: chatUsers }     // , ...users]
@@ -59,16 +58,6 @@ router.post(
 
         chatGroup.messages.push(message.id)
 
-        // const chat = await ChatMessage.findById(message.id).populate("from")
-        //     .populate({
-        //         path: "group",
-        //         select: "users",
-        //         populate: {
-        //             path: "users",
-        //             select: "status"
-        //         }
-
-        //     })
         const pageSize: any = 10
         const page: any = 1
         const skip = (page - 1) * pageSize;
@@ -86,7 +75,7 @@ router.post(
                 }
 
 
-            }).sort({ createdAt: 1 })
+            }).sort({ createdAt: -1 })
             .skip(skip).limit(pageSize)
 
         await chatGroup.save()
@@ -108,14 +97,6 @@ router.post(
                 nextPage
             }
         })
-        // const messages = await ChatMessage.find({
-        //     group: chatGroup.id
-        // }).populate("from")
-
-
-
-
-        // return res.send({ message: "Message sent", chat })
 
     }
 );

@@ -27,8 +27,6 @@ router.post(
 
         const user = await User.find({ _id: users })
 
-        console.log(user, "USER")
-
 
         if (user.length < users.length) {
             throw new BadRequestError("Some users are invalid")

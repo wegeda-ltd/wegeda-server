@@ -12,6 +12,7 @@ interface UserAttrs {
     phone_number: string;
     profile_type: UserType;
     profile_image?: string;
+    budget?: number[];
 }
 
 interface UserDoc extends Document {
@@ -22,6 +23,7 @@ interface UserDoc extends Document {
     profile_image?: string;
     phone_number: string;
     profile_type: UserType;
+    budget?: number[];
 
 }
 
@@ -58,6 +60,10 @@ const userSchema = new Schema({
         required: true,
         enum: Object.values(UserType),
     },
+    budget: [{
+        type: String
+    }],
+
 
 }, {
     toJSON: {

@@ -27,7 +27,6 @@ router.get("/api/users/current-user", currentUser, async (req, res) => {
         budget: user?.budget
       })
 
-      console.log(current_user, "CURRENT USER")
 
       await current_user?.save()
 

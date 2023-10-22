@@ -17,8 +17,6 @@ router.get("/api/listings/:listing_id/similar", currentUser, requireAuth, async 
 
     const monthly_payment = listing.monthly_payment
 
-    console.log(monthly_payment, "MONTHLY PAYMENT")
-    console.log(listing.id, "IDSSS")
 
     const similarListings = await Listing.find({
         $and: [

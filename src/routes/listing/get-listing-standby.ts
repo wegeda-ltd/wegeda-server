@@ -13,6 +13,7 @@ router.get("/api/listings/:listing_id/standby", currentUser, requireAuth, async 
         throw new NotFoundError("Listing not found")
     }
 
+
     res.status(200).send({ message: 'Standbys retrieved', listing })
 
 })

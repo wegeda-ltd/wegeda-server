@@ -22,6 +22,7 @@ import {
     getListingStandbyRouter,
     getSimilarListingsRouter,
     getUserListingRouter,
+    getUserStandbyRouter,
     standbyOnListingRouter,
     updateListingRouter
 } from './routes/listing';
@@ -106,6 +107,7 @@ app.use([
     getAllAgentListingRouter,
     getAllListingsRouter,
     getAllNonAgentListingRouter,
+    getUserStandbyRouter,
     getListingByIdRouter,
     getListingStandbyRouter,
     getSimilarListingsRouter,

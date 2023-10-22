@@ -116,7 +116,8 @@ router.post(
 
     if (user?.profile_image && !current_user?.profile_image) {
       current_user?.set({
-        profile_image: user?.profile_image
+        profile_image: user?.profile_image,
+        status: 'online'
       })
 
       await current_user?.save()

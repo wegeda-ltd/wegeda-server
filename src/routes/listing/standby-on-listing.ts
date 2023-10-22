@@ -14,11 +14,19 @@ router.post("/api/listings/:listing_id/standby", currentUser, requireAuth,
             throw new NotFoundError("Listing not found")
         }
 
-        await listing.updateOne({
-            $push: { on_stand_by: req.currentUser!.id }
-        })
+        if (listing.on_stand_by.includes(req.currentUser!.id)) {
+            await listing.updateOne({
+                $pull: { on_stand_by: req.currentUser!.id }
+            })
 
-        res.status(201).send({ message: 'Added to standby' })
+        } else {
+            await listing.updateOne({
+                $push: { on_stand_by: req.currentUser!.id }
+            })
+
+        }
+
+        res.status(201).send({ message: !listing.on_stand_by.includes(req.currentUser!.id) ? 'Added to standby' : 'Removed fron standby' })
 
     })
 

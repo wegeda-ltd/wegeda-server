@@ -16,7 +16,8 @@ router.get(
         const skip = (page - 1) * pageSize;
 
         const messages = await ChatGroup.find({
-            users: req.currentUser!.id
+            users: req.currentUser!.id,
+            type: 'chat'
         }).populate({
             path: "messages",
             options: { sort: { createdAt: -1 } }

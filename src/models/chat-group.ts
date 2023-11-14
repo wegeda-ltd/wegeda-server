@@ -7,6 +7,7 @@ interface ChatGroupAttrs {
     admins?: string[];
     name: string;
     isGroup?: boolean;
+    type?: 'chat' | 'agreement'
 }
 
 interface ChatGroupDoc extends Document {
@@ -15,6 +16,7 @@ interface ChatGroupDoc extends Document {
     admins?: string[];
     isGroup: boolean
     name: string;
+    type?: 'chat' | 'agreement'
     createdAt: string;
     updatedAt: string;
 
@@ -38,6 +40,10 @@ const chatGroupSchema = new Schema({
     name: {
         type: String,
         required: true
+    },
+    type: {
+        type: String,
+        default: 'chat'
     },
     isGroup: {
         type: Boolean,

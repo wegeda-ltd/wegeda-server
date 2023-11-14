@@ -41,7 +41,7 @@ import {
     createListingSubscriptionRouter,
     getAllChatSubscriptionRouter,
     getAllListingSubscriptionRouter,
-    getuserSubscriptionRouter,
+    getUserSubscriptionRouter,
     initializePaymentRouter,
     subscribeToChatRouter,
     subscribeToListRouter,
@@ -81,7 +81,8 @@ import {
     verifyOccupationRouter,
     verifySocialsRouter
 } from './routes/verification';
-import { createNewGroupRouter, getChatUsersRouter, getMessageDetailsRouter, getMessagesRouter, sendMessageRouter } from './routes/messaging';
+import { createNewGroupRouter, getChatUsersRouter, getGroupRouter, getMessageDetailsRouter, getMessagesRouter, sendMessageRouter } from './routes/messaging';
+import { checkinRouter, downloadPDFRouter, downloadRoommateAgreementRouter, getRoommatesRouter, uploadRoommateAgreementRouter } from './routes/checkin';
 
 
 const app = express();
@@ -95,6 +96,13 @@ app.use(cookieSession({
 }));
 
 app.use([
+    // Checkin
+    checkinRouter,
+    downloadRoommateAgreementRouter,
+    downloadPDFRouter,
+    getRoommatesRouter,
+    uploadRoommateAgreementRouter,
+
     // favorites
     addToFavoriteRouter,
     getRoomFavoritesRouter,
@@ -126,9 +134,9 @@ app.use([
     // Subscription
     createChatSubscriptionRouter,
     createListingSubscriptionRouter,
+    getUserSubscriptionRouter,
     getAllChatSubscriptionRouter,
     getAllListingSubscriptionRouter,
-    getuserSubscriptionRouter,
     initializePaymentRouter,
     subscribeToChatRouter,
     subscribeToListRouter,
@@ -169,6 +177,7 @@ app.use([
 
     // MESSAGING
     sendMessageRouter,
+    getGroupRouter,
     getChatUsersRouter,
     getMessagesRouter,
     getMessageDetailsRouter,

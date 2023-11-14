@@ -40,7 +40,7 @@ const start = async () => {
     })
 }
 
-const users = new Map();
+// const users = new Map();
 
 // TODO MOVE LOGIC TO A SEPARATE FOLDER
 // SOCKET
@@ -71,9 +71,9 @@ io.on("connection", async (socket) => {
 
     }
     socket.on("getMessages", async (token) => {
-
+        console.log("TOUCHED")
         try {
-            const response = await axios.get('http://localhost:3001/api/messages', {
+            const response = await axios.get('http://127.0.0.1:3001/api/messages', {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
@@ -89,22 +89,19 @@ io.on("connection", async (socket) => {
     socket.on("getSingleChat", async ({ token, message_id, user_id }) => {
         if (token) {
 
-
             try {
-
-                const subResponse = await axios.get('http://localhost:3001/api/subscriptions/user-subscription', {
+                const subResponse = await axios.get('http://127.0.0.1:3001/api/subscriptions/user-subscription', {
                     headers: {
                         Authorization: 'Bearer ' + token
                     }
                 })
-
 
                 const subscription = subResponse.data
                 if (subscription.account_type == UserType.HouseSeeker && (!subscription.user_subscription || subscription.user_subscription.amount_left < 1 || subscription.is_expired)) {
                     io.emit("no-subscription", { message: "User has no active subscription" })
                     return;
                 }
-                const response = await axios.get(`http://localhost:3001/api/messages/${message_id}/${user_id}`, {
+                const response = await axios.get(`http://127.0.0.1:3001/api/messages/${message_id}/${user_id}`, {
                     headers: {
                         Authorization: 'Bearer ' + token
                     }
@@ -115,13 +112,14 @@ io.on("connection", async (socket) => {
 
                 return messages
             } catch (error: any) {
+                // console.log(error?.response, "ERROR OCURRED")
             }
         }
     })
 
     socket.on("sendMessage", async ({ token, data }) => {
         try {
-            const resp = await axios.post('http://localhost:3001/api/messages', data, {
+            const resp = await axios.post('http://127.0.0.1:3001/api/messages', data, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }

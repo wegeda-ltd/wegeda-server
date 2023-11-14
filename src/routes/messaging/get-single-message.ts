@@ -1,6 +1,7 @@
 import { Request, Response, Router } from "express";
 import { currentUser, requireAuth, } from "../../middlewares";
-import { ChatGroup, ChatMessage, } from "../../models";
+import { ChatGroup, ChatGroupDoc, ChatMessage, } from "../../models";
+import { Types } from "mongoose";
 
 const router = Router();
 
@@ -14,12 +15,18 @@ router.get(
         const page: any = req.query.page || 1
         const skip = (page - 1) * pageSize;
 
-        const chatGroup = await ChatGroup.findOne({
-            users: [req.currentUser?.id, req.params.userId]
-        })
+        let chatGroup: (ChatGroupDoc & {
+            _id: Types.ObjectId;
+        }) | null;
+        if (req.params.id == 'undefined') {
+            chatGroup = await ChatGroup.findOne({
+                users: [req.currentUser?.id, req.params.userId]
+            })
+
+        }
 
 
-        const groupId = req.params.id != "undefined" ? req.params.id : chatGroup?.id;
+        const groupId = req.params.id != "undefined" ? req.params.id : chatGroup!.id;
 
         if (groupId) {
             await ChatMessage.updateMany({

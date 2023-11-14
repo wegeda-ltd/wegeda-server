@@ -20,7 +20,8 @@ router.post(
         const {
             users,
             text,
-            images
+            images,
+            type
         } = req.body;
 
         const user = await User.findById(users.filter((user: string) => user !== req.currentUser!.id)[0])
@@ -33,13 +34,16 @@ router.post(
 
 
         let chatGroup: any = await ChatGroup.findOne({
-            users: { $all: chatUsers }     // , ...users]
+            users: { $all: chatUsers },
+            type: type ? type : 'chat'    // , ...users]
         })
 
         if (!chatGroup) {
             chatGroup = ChatGroup.build({
                 users: [req.currentUser?.id, ...users],
-                name: `${user?.first_name} ${user?.last_name}`
+                name: `${user?.first_name} ${user?.last_name}`,
+                type: type ? type : 'chat',
+                isGroup: type === 'chat' ? false : true
             })
 
             await chatGroup.save()
@@ -90,6 +94,7 @@ router.post(
         return res.send({
             message: "Messages retrieved",
             chat: chat.reverse(),
+            group: chatGroup.id,
             pagination: {
                 pageSize,
                 currentPage: page,

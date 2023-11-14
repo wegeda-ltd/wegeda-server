@@ -4,7 +4,6 @@ import { OtpClass, sendMail, sendSMS } from "../../services";
 const router = Router();
 
 router.post("/api/users/resend-otp", async (req: Request, res: Response) => {
-  console.log("INSIDE LIFE");
   let { email, phone_number } = req.body;
 
   if (phone_number) {

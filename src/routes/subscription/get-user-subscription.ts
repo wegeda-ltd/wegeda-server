@@ -7,7 +7,7 @@ import { UserType } from "../../types";
 const router = Router()
 
 router.get("/api/subscriptions/user-subscription", currentUser, requireAuth,
-    validateRequest, async (req: Request, res: Response) => {
+    async (req: Request, res: Response) => {
 
         let user_subscription = await UserSubscription.findOne({ user: req.currentUser!.id })
 
@@ -24,4 +24,4 @@ router.get("/api/subscriptions/user-subscription", currentUser, requireAuth,
 
     })
 
-export { router as getuserSubscriptionRouter }
+export { router as getUserSubscriptionRouter }

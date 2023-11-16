@@ -15,9 +15,10 @@ router.get(
         const page: any = req.query.page || 1
         const skip = (page - 1) * pageSize;
 
-        let chatGroup: (ChatGroupDoc & {
-            _id: Types.ObjectId;
-        }) | null;
+        let chatGroup: any;
+        // const chatGroup: (ChatGroupDoc & {
+        //     _id: Types.ObjectId;
+        // }) | null;
         if (req.params.id == 'undefined') {
             chatGroup = await ChatGroup.findOne({
                 users: [req.currentUser?.id, req.params.userId]
@@ -26,7 +27,9 @@ router.get(
         }
 
 
-        const groupId = req.params.id != "undefined" ? req.params.id : chatGroup!.id;
+
+        const groupId = req.params.id != "undefined" ? req.params.id : chatGroup?.id;
+
 
         if (groupId) {
             await ChatMessage.updateMany({

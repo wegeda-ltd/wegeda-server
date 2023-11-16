@@ -9,7 +9,8 @@ const router = Router()
 router.get("/api/subscriptions/user-subscription", currentUser, requireAuth,
     async (req: Request, res: Response) => {
 
-        let user_subscription = await UserSubscription.findOne({ user: req.currentUser!.id })
+        let user_subscription = await UserSubscription.findOne({ user: req.currentUser!.id, is_expired: false })
+
 
         if (!user_subscription) {
             return res.status(200).send({ message: 'Subscription retrieved', account_type: req.currentUser!.profile_type, user_subscription: null, subscription: null })

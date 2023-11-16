@@ -38,7 +38,10 @@ router.post(
             throw new ServerError('Unable to verify payment')
         }
 
-        for (const user of roommates) {
+        const filteredRoommates: Set<string> = new Set(roommates)
+        const roommies: string[] = Array.from(filteredRoommates)
+
+        for (const user of roommies) {
             const exists = await User.findById(user);
 
             if (!exists) {
@@ -49,8 +52,9 @@ router.post(
         }
 
 
+
         const roommateAgreement = RoommateAgreement.build({
-            roommates,
+            roommates: roommies,
             payment_ref: reference,
             checkin_date,
             checkin_mode,

@@ -85,7 +85,7 @@ router.post(
       return;
     }
 
-    const isAgent = await Agent.find({
+    const isAgent = await Agent.findOne({
       user: current_user.id,
     });
 
@@ -132,8 +132,8 @@ router.post(
       profile_image: profile_image
         ? profile_image
         : gender === "female"
-        ? "https://res.cloudinary.com/diils/image/upload/v1677774464/wegeda/user_female_umai03.png"
-        : "https://res.cloudinary.com/diils/image/upload/v1677774465/wegeda/user_male_wpb9rn.png",
+          ? "https://res.cloudinary.com/diils/image/upload/v1677774464/wegeda/user_female_umai03.png"
+          : "https://res.cloudinary.com/diils/image/upload/v1677774465/wegeda/user_male_wpb9rn.png",
       gallery_images,
       company,
       pets,

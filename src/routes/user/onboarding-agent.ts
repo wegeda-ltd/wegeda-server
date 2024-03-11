@@ -54,9 +54,11 @@ router.post(
       return;
     }
 
-    const isHouseSeeker = await HouseSeeker.find({
+    const isHouseSeeker = await HouseSeeker.findOne({
       user: current_user.id,
     });
+
+    console.log(isHouseSeeker, "IS HOUSE SEEKER")
 
     if (isHouseSeeker) {
       throw new BadRequestError(

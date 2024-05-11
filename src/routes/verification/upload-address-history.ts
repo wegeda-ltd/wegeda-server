@@ -23,7 +23,6 @@ router.post("/api/verification/upload-address", currentUser, requireAuth, [
     body('problems_with_landlord').notEmpty().withMessage('do you have problems with your landlord?'),
 
 ], validateRequest, async (req: Request, res: Response) => {
-    console.log("TOUCHED")
     let {
         prev_address_line1,
         prev_address_line2,

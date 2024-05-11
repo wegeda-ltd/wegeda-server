@@ -1,17 +1,26 @@
 import mongoose from "mongoose"
 import http from 'http';
-
+import express from 'express';
 import { config } from 'dotenv'
 import { app } from "./app"
-import { Server } from "socket.io"
+import { Server, Socket } from "socket.io"
 import axios from "axios";
 import { User } from "./models";
 import { UserType } from "./types";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 const server = http.createServer(app);
 const io = new Server(server)
 config()
 
+declare global {
+    namespace Express {
+        interface Request{
+            io:Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
+            socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
+          }
+    }
+}
 
 const start = async () => {
     console.log("starting up...")
@@ -53,8 +62,10 @@ io.use((socket: any, next) => {
     }
 })
 
+express.request.io = io;
 io.on("connection", async (socket) => {
-    console.log("CONNECTION HERE")
+    // @ts-ignore
+    express.request.socket = socket
     const sock: any = socket
     let user: any = {};
     if (sock.user !== "undefined") {
@@ -72,6 +83,7 @@ io.on("connection", async (socket) => {
 
     }
     socket.on("getMessages", async (token) => {
+        
         try {
             const response = await axios.get('http://127.0.0.1:3001/api/messages', {
                 headers: {
@@ -81,12 +93,17 @@ io.on("connection", async (socket) => {
 
 
             const messages = response.data
+
+            
             io.emit("messages", messages)
         } catch (error: any) {
+            console.log(error.response);
+            
         }
     })
 
     socket.on("getSingleChat", async ({ token, message_id, user_id }) => {
+      
         if (token) {
 
             try {
@@ -96,7 +113,6 @@ io.on("connection", async (socket) => {
                     }
                 })
 
-                console.log(subResponse.data, "SUB RESPONSE")
                 const subscription = subResponse.data
                 if (subscription.account_type == UserType.HouseSeeker && (!subscription.user_subscription || subscription.user_subscription.amount_left < 1 || subscription.is_expired)) {
                     io.emit("no-subscription", { message: "User has no active subscription" })
@@ -132,6 +148,39 @@ io.on("connection", async (socket) => {
             console.log(error?.response?.data, "ERROR MESSAGE")
         }
     });
+
+    socket.on("editMessage", async ({token, data})=> {
+        console.log("HERE OOOO");
+        
+        try {
+            const resp = await axios.patch(`http://127.0.0.1:3001/api/messages/${data.id}`, data, {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            })
+io.emit("chats", resp.data)
+        } catch (error:any) {
+            console.log(error?.response?.data, "ERROR MESSAGE")
+     
+        }
+    })
+
+
+    socket.on("deleteMessage", async ({token, data})=> {
+        
+        try {
+            const resp = await axios.delete(`http://127.0.0.1:3001/api/messages/${data.id}`, {
+                headers: {
+                    Authorization: 'Bearer ' + token
+                }
+            })
+        io.emit("chats", resp.data)
+        } catch (error:any) {
+            console.log(error?.response?.data, "ERROR MESSAGE")
+     
+        }
+    })
+
 
     socket.on("startCall", async ({ user_id, type, group }) => {
         const sock: any = socket

@@ -8,6 +8,36 @@ import { SubscriptionType, UserType } from "../../types";
 
 const router = Router()
 
+export const subscribe = async ({user_id, profile_type, duration, reference, subscription_id}:{user_id:string; profile_type:string; duration:number; reference:string; subscription_id:string})=> {
+   
+    let subscription_plan;
+    if (profile_type == UserType.Agent) {
+        subscription_plan = await ListingSubscription.findById(subscription_id)
+
+    } else {
+        subscription_plan = await ChatSubscription.findById(subscription_id)
+    }
+
+    if (!subscription_plan) {
+        throw new NotFoundError("Subscription not found!")
+    }
+
+
+    const payment = PaymentModel.build({
+        user: user_id,
+        reference,
+        subscription_type: profile_type == UserType.HouseSeeker ? SubscriptionType.Chat : SubscriptionType.Listing,
+        subscription_id: subscription_id,
+        subscription_price: (subscription_plan.subscription_price) * duration,
+        duration
+    })
+
+    await payment.save()
+
+    return {}
+
+
+}
 router.post("/api/subscriptions/:subscription_id/pay", currentUser, requireAuth,
     [
         body('duration').isInt({ gt: 0 }).withMessage('duration must be greater than zero'),

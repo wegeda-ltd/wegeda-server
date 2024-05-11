@@ -3,6 +3,7 @@ import { body } from "express-validator";
 import { currentUser, requireAuth, validateRequest } from "../../middlewares";
 import { ChatGroup, ChatMessage, User, } from "../../models";
 import { BadRequestError } from "../../errors";
+import { getAllMessages } from "./get-all-messages";
 
 const router = Router();
 
@@ -91,6 +92,9 @@ router.post(
         const nextPage = totalPages > page ? parseInt(page) + 1 : null;
 
 
+        const {messages, unread, pagination} =  await getAllMessages(req)
+
+        req.io.emit("messages", {messages, unread, pagination})
         return res.send({
             message: "Messages retrieved",
             chat: chat.reverse(),

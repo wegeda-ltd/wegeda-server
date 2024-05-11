@@ -6,17 +6,22 @@ import { ChatSubscription, Payment as PaymentModel, UserSubscription, } from "..
 import { Payment } from "../../services";
 import { DateClass } from "../../services/date";
 import { UserType } from "../../types";
+import { subscribe } from "./initialize-payment";
 
 const router = Router()
 
 router.post("/api/subscriptions/chat-subscription/subscribe", currentUser, requireAuth,
     [
         body('reference').notEmpty().withMessage('please enter the payment reference'),
+        body('duration').isInt({ gt: 0 }).withMessage('duration must be greater than zero'),
+        body('subscription_id').notEmpty().withMessage('enter subscription id'),
+
 
     ], validateRequest, async (req: Request, res: Response) => {
 
-        const { reference } = req.body
+        const { reference, duration, subscription_id } = req.body
 
+       await subscribe({user_id:req.currentUser!.id, reference, duration, subscription_id, profile_type:req.currentUser!.profile_type})
         const paymentVerified = await new Payment().verifyPayment(reference)
 
 

@@ -81,7 +81,16 @@ import {
     verifyOccupationRouter,
     verifySocialsRouter
 } from './routes/verification';
-import { createNewGroupRouter, getChatUsersRouter, getGroupRouter, getMessageDetailsRouter, getMessagesRouter, sendMessageRouter } from './routes/messaging';
+import { 
+    createNewGroupRouter, 
+    getChatUsersRouter, 
+    getGroupRouter, 
+    getMessageDetailsRouter, 
+    getMessagesRouter, 
+    sendMessageRouter,
+    editMessageRouter,
+    deleteMessageRouter
+} from './routes/messaging';
 import { checkinRouter, downloadPDFRouter, downloadRoommateAgreementRouter, getRoommatesRouter, uploadRoommateAgreementRouter } from './routes/checkin';
 
 
@@ -94,6 +103,8 @@ app.use(cookieSession({
     secure: false,
 
 }));
+
+
 
 app.use([
     // Checkin
@@ -177,6 +188,8 @@ app.use([
 
     // MESSAGING
     sendMessageRouter,
+    deleteMessageRouter,
+    editMessageRouter,
     getGroupRouter,
     getChatUsersRouter,
     getMessagesRouter,

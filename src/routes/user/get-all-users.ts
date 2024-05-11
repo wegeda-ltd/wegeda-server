@@ -110,7 +110,7 @@ router.get(
       filters.partying = partying;
     }
 
-    console.log(filters, "FILTERS");
+    
     const users = await HouseSeeker.paginate(
       {
         user: { $ne: req.currentUser!.id },

@@ -7,6 +7,8 @@ interface ChatMessageAttrs {
     group: string;
     images?: string[];
     read_by: string[];
+    is_edited?:boolean;
+    is_deleted?:boolean;
 
 }
 
@@ -16,6 +18,8 @@ interface ChatMessageDoc extends Document {
     group: string;
     images?: string[];
     read_by: string[];
+    is_edited?:boolean;
+    is_deleted?:boolean;
     createdAt: string;
     updatedAt: string;
 
@@ -28,6 +32,14 @@ interface ChatMessageModel extends PaginateModel<ChatMessageDoc> {
 const chatMessageSchema = new Schema({
     text: {
         type: String,
+    },
+    is_deleted: {
+        type: Boolean,
+        default:false
+    },
+    is_edited: {
+        type: Boolean,
+        default:false
     },
     read_by: [{
         type: String,

@@ -5,11 +5,18 @@ import { ChatMessage } from "../../models";
 
 const router = Router()
 
-router.delete(
+router.patch(
     "/api/messages/:id",
     currentUser,
     requireAuth,
+    [
+        body("text").notEmpty().withMessage("Enter your message"),
+    ],
+    validateRequest,
     async (req:Request, res:Response)=>{
+        const {text} = req.body;
+
+
         const message = await ChatMessage.findById(req.params.id);
 
         
@@ -20,8 +27,9 @@ router.delete(
         message.group
 
         message.set({
-            is_deleted:true
-        });
+            text,
+            is_edited:true
+        })
 
         await message.save()
         
@@ -66,4 +74,4 @@ router.delete(
 )
 
 
-export {router as deleteMessageRouter}
+export {router as editMessageRouter}

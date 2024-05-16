@@ -3,6 +3,7 @@ import { Request, Response, Router } from "express";
 import { currentUser, requireAuth } from "../../middlewares";
 import { HouseSeeker } from "../../models";
 import { GenderType } from "../../types";
+import { Pagination } from "../../services/pagination";
 
 const router = Router();
 
@@ -37,25 +38,26 @@ router.get(
       cooks,
       religion,
       partying,
+      page = 1
     } = req.query;
 
-    const myCustomLabels = {
-      totalDocs: "itemCount",
-      docs: "itemsList",
-      limit: "perPage",
-      page: "currentPage",
-      nextPage: "next",
-      prevPage: "prev",
-      totalPages: "pageCount",
-      pagingCounter: "slNo",
-      meta: "paginator",
-    };
-    const options = {
-      page: 1,
-      limit: 10,
-      customLabels: myCustomLabels,
-      populate: ["user"],
-    };
+    // const myCustomLabels = {
+    //   totalDocs: "itemCount",
+    //   docs: "itemsList",
+    //   limit: "perPage",
+    //   page: "currentPage",
+    //   nextPage: "next",
+    //   prevPage: "prev",
+    //   totalPages: "pageCount",
+    //   pagingCounter: "slNo",
+    //   meta: "paginator",
+    // };
+    // const options = {
+    //   page: 1,
+    //   limit: 10,
+    //   customLabels: myCustomLabels,
+    //   populate: ["user"],
+    // };
     let filters: IUsersFilters = {};
 
     if (budget_range) {
@@ -110,19 +112,42 @@ router.get(
       filters.partying = partying;
     }
 
-    
-    const users = await HouseSeeker.paginate(
-      {
-        user: { $ne: req.currentUser!.id },
-        ...filters,
-      },
-      options
-    );
+    const perPage = 3;
+    const currentPage = page as number || 1
+    const skip = (currentPage - 1) * perPage;
+
+
+    const totalDocuments = await HouseSeeker.countDocuments({ ...filters });
+    const totalPages = Math.ceil(totalDocuments / perPage);
+
+    const users = await HouseSeeker.find({ ...filters })
+      .populate("user")
+      .sort({ 'createdAt': -1 })
+      .skip(skip)
+      .limit(perPage)
+
+    const pages = Pagination.getPages({ totalPages, req, pageSize: perPage })
+
+    const pagination = {
+      total: totalDocuments,
+      perPage,
+      totalPages,
+      page,
+      urls: pages
+    }
+
+    // const users = await HouseSeeker.paginate(
+    //   {
+    //     user: { $ne: req.currentUser!.id },
+    //     ...filters,
+    //   },
+    //   options
+    // );
 
     res.status(200).send({
       message: "Users retrieved",
-      users: users.itemsList,
-      paginator: users.paginator,
+      users: users,
+      pagination
     });
   }
 );

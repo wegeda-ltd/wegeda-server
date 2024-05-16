@@ -15,10 +15,10 @@ config()
 
 declare global {
     namespace Express {
-        interface Request{
-            io:Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
+        interface Request {
+            io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>;
             socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>
-          }
+        }
     }
 }
 
@@ -83,9 +83,9 @@ io.on("connection", async (socket) => {
 
     }
     socket.on("getMessages", async (token) => {
-        
+
         try {
-            const response = await axios.get('http://127.0.0.1:3001/api/messages', {
+            const response = await axios.get('http://127.0.0.1:5100/api/messages', {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
@@ -94,20 +94,20 @@ io.on("connection", async (socket) => {
 
             const messages = response.data
 
-            
+
             io.emit("messages", messages)
         } catch (error: any) {
             console.log(error.response);
-            
+
         }
     })
 
     socket.on("getSingleChat", async ({ token, message_id, user_id }) => {
-      
+
         if (token) {
 
             try {
-                const subResponse = await axios.get('http://127.0.0.1:3001/api/subscriptions/user-subscription', {
+                const subResponse = await axios.get('http://127.0.0.1:5100/api/subscriptions/user-subscription', {
                     headers: {
                         Authorization: 'Bearer ' + token
                     }
@@ -118,7 +118,7 @@ io.on("connection", async (socket) => {
                     io.emit("no-subscription", { message: "User has no active subscription" })
                     return;
                 }
-                const response = await axios.get(`http://127.0.0.1:3001/api/messages/${message_id}/${user_id}`, {
+                const response = await axios.get(`http://127.0.0.1:5100/api/messages/${message_id}/${user_id}`, {
                     headers: {
                         Authorization: 'Bearer ' + token
                     }
@@ -136,7 +136,7 @@ io.on("connection", async (socket) => {
 
     socket.on("sendMessage", async ({ token, data }) => {
         try {
-            const resp = await axios.post('http://127.0.0.1:3001/api/messages', data, {
+            const resp = await axios.post('http://127.0.0.1:5100/api/messages', data, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
@@ -149,35 +149,35 @@ io.on("connection", async (socket) => {
         }
     });
 
-    socket.on("editMessage", async ({token, data})=> {
+    socket.on("editMessage", async ({ token, data }) => {
         console.log("HERE OOOO");
-        
+
         try {
-            const resp = await axios.patch(`http://127.0.0.1:3001/api/messages/${data.id}`, data, {
+            const resp = await axios.patch(`http://127.0.0.1:5100/api/messages/${data.id}`, data, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
             })
-io.emit("chats", resp.data)
-        } catch (error:any) {
+            io.emit("chats", resp.data)
+        } catch (error: any) {
             console.log(error?.response?.data, "ERROR MESSAGE")
-     
+
         }
     })
 
 
-    socket.on("deleteMessage", async ({token, data})=> {
-        
+    socket.on("deleteMessage", async ({ token, data }) => {
+
         try {
-            const resp = await axios.delete(`http://127.0.0.1:3001/api/messages/${data.id}`, {
+            const resp = await axios.delete(`http://127.0.0.1:5100/api/messages/${data.id}`, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
             })
-        io.emit("chats", resp.data)
-        } catch (error:any) {
+            io.emit("chats", resp.data)
+        } catch (error: any) {
             console.log(error?.response?.data, "ERROR MESSAGE")
-     
+
         }
     })
 

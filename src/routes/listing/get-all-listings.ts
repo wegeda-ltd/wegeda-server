@@ -3,6 +3,7 @@ import { Request, Response, Router } from "express";
 import { currentUser, requireAuth } from "../../middlewares";
 import { Listing } from "../../models";
 import { UserType } from "../../types";
+import { Pagination } from "../../services/pagination";
 
 const router = Router();
 
@@ -17,27 +18,9 @@ router.get(
   currentUser,
   requireAuth,
   async (req: Request, res: Response) => {
-    const { state, room_type, budget_range, city } = req.query;
+    const { state, room_type, budget_range, city, page = 1, perPage = 10 } = req.query;
 
 
-    const myCustomLabels = {
-      totalDocs: "itemCount",
-      docs: "itemsList",
-      limit: "perPage",
-      page: "currentPage",
-      nextPage: "next",
-      prevPage: "prev",
-      totalPages: "pageCount",
-      pagingCounter: "slNo",
-      meta: "paginator",
-    };
-
-    const options = {
-      page: 1,
-      limit: 10,
-      customLabels: myCustomLabels,
-      populate: ["user"],
-    };
 
     let filters: IFilters = {};
 
@@ -45,7 +28,8 @@ router.get(
       filters.state = state;
     }
     if (room_type) {
-      filters.room_type = room_type;
+      // @ts-ignore
+      filters.room_type = room_type.toLocaleString().trim().toLowerCase().replaceAll(' ', '-');
     }
 
     if (city) {
@@ -59,15 +43,33 @@ router.get(
         $gte: parseFloat(budget[0]),
       };
     }
+    const pageSize = perPage as number;
 
-    const listings = await Listing.paginate({ ...filters }, options);
+    const currentPage = page as number || 1
+    const skip = (currentPage - 1) * pageSize;
 
 
+    const totalDocuments = await Listing.countDocuments({ ...filters });
+    const totalPages = Math.ceil(totalDocuments / pageSize);
+    const listings = await Listing.find({ ...filters }).populate("user")
+      .sort({ createdAt: -1 }).skip(skip).limit(pageSize)
 
+    const pages = Pagination.getPages({ totalPages, req, pageSize: pageSize })
+
+    const pagination = {
+      total: totalDocuments,
+      perPage,
+      totalPages,
+      page,
+      urls: pages
+    }
+
+
+    // console.log(pagination)
     res.status(200).send({
       message: "Listings retrieved",
-      listings: listings.itemsList,
-      paginator: listings.paginator,
+      listings,
+      pagination
     });
   }
 );

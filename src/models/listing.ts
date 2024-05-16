@@ -4,7 +4,7 @@ import paginate from 'mongoose-paginate-v2';
 
 interface ListingAttrs {
     user: string;
-    room_type: RoomType;
+    room_type: string;
     total_bedroom: number;
     total_bathroom: number;
     state: string;
@@ -25,7 +25,7 @@ interface ListingAttrs {
 
 interface ListingDoc extends Document {
     user: string;
-    room_type: RoomType;
+    room_type: string;
     total_bedroom: number;
     total_bathroom: number;
     state: string;
@@ -55,7 +55,7 @@ const listingSchema = new Schema({
     room_type: {
         type: String,
         required: true,
-        enum: Object.values(RoomType),
+        // enum: Object.values(RoomType),
     },
     total_bedroom: {
         type: Number,

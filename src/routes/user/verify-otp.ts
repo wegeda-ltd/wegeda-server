@@ -88,7 +88,12 @@ router.post(
       return res
         .status(200)
         .send({ message: "Otp verification successful!", token: userJwt });
+
     }
+
+
+
+
 
     userJwt = jwt.sign(
       {

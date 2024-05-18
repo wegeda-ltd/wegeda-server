@@ -1,5 +1,6 @@
 export * from './download-roommate-agreement'
 export * from './checkin'
+export * from './checkout'
 export * from './download-pdf'
 export * from './get-roommates'
 export * from './upload-signed-agreement'

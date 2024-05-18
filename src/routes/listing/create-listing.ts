@@ -23,31 +23,31 @@ router.post("/api/listings/create", currentUser, requireAuth, [
 
 ], validateRequest, async (req: Request, res: Response) => {
 
-    const has_subscribed = await UserSubscription.findOne({ user: req.currentUser!.id })
+    // const has_subscribed = await UserSubscription.findOne({ user: req.currentUser!.id })
 
-    if (req.currentUser!.profile_type == UserType.Agent) {
-        if (!has_subscribed) {
-            throw new BadRequestError("You're not subscribed to list")
-        }
+    // if (req.currentUser!.profile_type == UserType.Agent) {
+    //     if (!has_subscribed) {
+    //         throw new BadRequestError("You're not subscribed to list")
+    //     }
 
-        if (has_subscribed.amount_left <= 0) {
-            throw new BadRequestError("Your subscription is exhausted")
+    //     if (has_subscribed.amount_left <= 0) {
+    //         throw new BadRequestError("Your subscription is exhausted")
 
-        }
+    //     }
 
-        if (has_subscribed.is_expired || DateClass.has_expired({ created_at: new Date(has_subscribed.expiry_date), duration: has_subscribed.duration })) {
-            if (!has_subscribed.is_expired) {
-                has_subscribed.set({
-                    is_expired: true
-                })
-            }
+    //     if (has_subscribed.is_expired || DateClass.has_expired({ created_at: new Date(has_subscribed.expiry_date), duration: has_subscribed.duration })) {
+    //         if (!has_subscribed.is_expired) {
+    //             has_subscribed.set({
+    //                 is_expired: true
+    //             })
+    //         }
 
-            await has_subscribed.save()
-            throw new BadRequestError("Your subscription has expired")
+    //         await has_subscribed.save()
+    //         throw new BadRequestError("Your subscription has expired")
 
-        }
+    //     }
 
-    }
+    // }
 
     let verifications = await Verification.findOne({ user: req.currentUser!.id })
     let is_verified = false;
@@ -89,11 +89,11 @@ router.post("/api/listings/create", currentUser, requireAuth, [
 
     await new_listing.save()
 
-    if (req.currentUser!.profile_type == UserType.Agent && has_subscribed) {
-        has_subscribed.set({
-            amount_left: has_subscribed.amount_left - 1
-        })
-    }
+    // if (req.currentUser!.profile_type == UserType.Agent && has_subscribed) {
+    //     has_subscribed.set({
+    //         amount_left: has_subscribed.amount_left - 1
+    //     })
+    // }
     res.status(201).send({ message: 'Listing created' })
 
 })

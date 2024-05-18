@@ -31,6 +31,7 @@ router.post(
     }
 
 
+    console.log(phone_number, "PHONE NUMBER", email)
     const userExist = await User.findOne({ phone_number, email });
     const userWithEmailExists = await User.findOne({ email });
     const userWithPhoneNumberExist = await User.findOne({ phone_number });

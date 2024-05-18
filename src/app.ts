@@ -81,17 +81,17 @@ import {
     verifyOccupationRouter,
     verifySocialsRouter
 } from './routes/verification';
-import { 
-    createNewGroupRouter, 
-    getChatUsersRouter, 
-    getGroupRouter, 
-    getMessageDetailsRouter, 
-    getMessagesRouter, 
+import {
+    createNewGroupRouter,
+    getChatUsersRouter,
+    getGroupRouter,
+    getMessageDetailsRouter,
+    getMessagesRouter,
     sendMessageRouter,
     editMessageRouter,
     deleteMessageRouter
 } from './routes/messaging';
-import { checkinRouter, downloadPDFRouter, downloadRoommateAgreementRouter, getRoommatesRouter, uploadRoommateAgreementRouter } from './routes/checkin';
+import { checkinRouter, checkoutRouter, downloadPDFRouter, downloadRoommateAgreementRouter, getRoommatesRouter, uploadRoommateAgreementRouter } from './routes/checkin';
 
 
 const app = express();
@@ -109,6 +109,7 @@ app.use(cookieSession({
 app.use([
     // Checkin
     checkinRouter,
+    checkoutRouter,
     downloadRoommateAgreementRouter,
     downloadPDFRouter,
     getRoommatesRouter,

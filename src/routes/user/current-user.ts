@@ -2,6 +2,7 @@ import { Router } from "express";
 import { currentUser } from "../../middlewares";
 import { HouseSeeker, Agent, Verification, User } from "../../models";
 import { UserType } from "../../types";
+import { CheckIn } from "../../models/checkin";
 
 const router = Router();
 
@@ -11,6 +12,10 @@ router.get("/api/users/current-user", currentUser, async (req, res) => {
     const current_user = await User.findById(req.currentUser.id)
     let user: any;
     let verifications;
+    const isCheckedIn = await CheckIn.findOne({
+      roommates: req.currentUser!.id
+    })
+
     if (req.currentUser.profile_type === UserType.HouseSeeker) {
       user = await HouseSeeker.findOne({ user: req.currentUser.id }).populate(
         "user"
@@ -41,7 +46,11 @@ router.get("/api/users/current-user", currentUser, async (req, res) => {
 
       await current_user?.save()
     }
-    res.send({ currentUser: user ? user : req.currentUser, verifications });
+
+
+    const userReturned = user ? { ...user._doc, id: user._id, is_checked_in: isCheckedIn?.is_active || false } : { ...req.currentUser, is_checked_in: isCheckedIn?.is_active || false }
+
+    res.send({ currentUser: userReturned, verifications });
   } else {
     res.send({ currentUser: null });
   }

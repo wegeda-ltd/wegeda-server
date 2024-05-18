@@ -8,6 +8,8 @@ interface CheckInAttrs {
     roommate_agreement?: string;
     roommates: string[];
     is_active?: boolean;
+    address?: string;
+    moving_to?: string;
 
 }
 
@@ -18,6 +20,8 @@ interface CheckInDoc extends Document {
     roommate_agreement?: string;
     roommates: string[];
     is_active?: boolean;
+    address?: string;
+    moving_to?: string;
 
 }
 
@@ -32,6 +36,12 @@ const checkInSchema = new Schema({
     },
     checkout_date: {
         type: Date,
+    },
+    address: {
+        type: String,
+    },
+    moving_to: {
+        type: String,
     },
 
     checkin_mode: {

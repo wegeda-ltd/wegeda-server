@@ -44,7 +44,6 @@ router.post(
             roommates: req.currentUser!.id
         })
 
-        console.log(checkedIn?.is_active)
         if (checkedIn?.is_active) {
             throw new BadRequestError("You have not yet checked out from your last apartment")
         }
@@ -53,7 +52,7 @@ router.post(
             checkin_date,
             checkout_date,
             checkin_mode,
-            roommate_agreement
+            roommate_agreement,
         })
 
 

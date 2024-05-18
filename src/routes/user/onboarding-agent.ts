@@ -46,6 +46,7 @@ router.post(
       agent_type,
       about_organization,
       organization_name,
+      profile_image
     } = req.body;
 
     const current_user = await User.findById(req.currentUser?.id);
@@ -92,10 +93,11 @@ router.post(
       throw new BadRequestError("User is already onboarded!");
     }
 
+    console.log(agent_type, profile_image, organization_name, "DATA")
     const agent = Agent.build({
       user: current_user.id,
       agent_type,
-      profile_image:
+      profile_image: profile_image ? profile_image :
         "https://res.cloudinary.com/diils/image/upload/v1677774465/wegeda/user_male_wpb9rn.png",
       organization_name,
       about_organization,

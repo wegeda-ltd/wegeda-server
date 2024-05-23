@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 
 import { currentUser, requireAuth } from "../../middlewares";
-import { Listing } from "../../models";
+import { Listing, MySearch } from "../../models";
 import { UserType } from "../../types";
 import { Pagination } from "../../services/pagination";
 
@@ -18,7 +18,24 @@ router.get(
   currentUser,
   requireAuth,
   async (req: Request, res: Response) => {
-    const { state, room_type, budget_range, city, page = 1, perPage = 10 } = req.query;
+    const {
+      date,
+      budget_range,
+      gender,
+      description,
+      interests,
+      smokes,
+      drinks,
+      cleans_room,
+      cooks,
+      religion,
+      partying,
+      state,
+      room_type,
+      city,
+      page = 1,
+      perPage = 10
+    }: any = req.query;
 
 
 
@@ -28,7 +45,6 @@ router.get(
       filters.state = state;
     }
     if (room_type) {
-      // @ts-ignore
       filters.room_type = room_type.toLocaleString().trim().toLowerCase().replaceAll(' ', '-');
     }
 
@@ -36,13 +52,65 @@ router.get(
       filters.city = city;
     }
     if (budget_range) {
-      // @ts-ignore
       const budget = budget_range.split(",");
       filters.monthly_payment = {
         $lte: parseFloat(budget[1]),
         $gte: parseFloat(budget[0]),
       };
     }
+
+    if (Object.keys(filters).length) {
+      const mySimilarSearch = await MySearch.findOne({
+        date,
+        user: req.currentUser?.id
+      })
+
+      if (!mySimilarSearch) {
+        await MySearch.findOneAndDelete({
+          user: req.currentUser!.id
+        })
+
+        const mySearch = MySearch.build({
+          user: req.currentUser!.id,
+          date,
+          budget_range,
+          gender,
+          description,
+          interests,
+          smokes,
+          drinks,
+          cleans_room,
+          cooks,
+          religion,
+          partying,
+          state,
+          room_type,
+          city,
+        })
+
+        await mySearch.save()
+      } else {
+        mySimilarSearch.set({
+          budget_range,
+          gender,
+          description,
+          interests,
+          smokes,
+          drinks,
+          cleans_room,
+          cooks,
+          religion,
+          partying,
+          state,
+          room_type,
+          city
+        })
+
+        await mySimilarSearch.save()
+      }
+    }
+
+
     const pageSize = perPage as number;
 
     const currentPage = page as number || 1

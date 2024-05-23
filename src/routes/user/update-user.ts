@@ -24,6 +24,7 @@ router.patch(
       profile_image,
       gallery_images,
       budget,
+      category,
     } = req.body;
     const current_user = await User.findById(req.currentUser?.id);
 
@@ -50,6 +51,7 @@ router.patch(
         budget: budget ? budget : user.budget,
         profile_image: profile_image ? profile_image : user.profile_image,
         gallery_images: gallery_images ? gallery_images : user.gallery_images,
+        category: category ? category : user.category
       });
 
       await user.save();

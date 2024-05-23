@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 
 import { currentUser, requireAuth } from "../../middlewares";
-import { HouseSeeker } from "../../models";
+import { HouseSeeker, MySearch } from "../../models";
 import { GenderType } from "../../types";
 import { Pagination } from "../../services/pagination";
 
@@ -28,6 +28,7 @@ router.get(
   requireAuth,
   async (req: Request, res: Response) => {
     const {
+      date,
       budget_range,
       gender,
       description,
@@ -38,26 +39,12 @@ router.get(
       cooks,
       religion,
       partying,
+      state,
+      room_type,
+      city,
       page = 1
-    } = req.query;
+    }: any = req.query;
 
-    // const myCustomLabels = {
-    //   totalDocs: "itemCount",
-    //   docs: "itemsList",
-    //   limit: "perPage",
-    //   page: "currentPage",
-    //   nextPage: "next",
-    //   prevPage: "prev",
-    //   totalPages: "pageCount",
-    //   pagingCounter: "slNo",
-    //   meta: "paginator",
-    // };
-    // const options = {
-    //   page: 1,
-    //   limit: 10,
-    //   customLabels: myCustomLabels,
-    //   populate: ["user"],
-    // };
     let filters: IUsersFilters = {};
 
     if (budget_range) {
@@ -112,6 +99,60 @@ router.get(
       filters.partying = partying;
     }
 
+
+    if (Object.keys(filters).length) {
+      const mySimilarSearch = await MySearch.findOne({
+        date,
+        user: req.currentUser?.id
+      })
+
+      if (!mySimilarSearch) {
+        await MySearch.findOneAndDelete({
+          user: req.currentUser!.id
+        })
+
+        const mySearch = MySearch.build({
+          user: req.currentUser!.id,
+          date,
+          budget_range,
+          gender,
+          description,
+          interests,
+          smokes,
+          drinks,
+          cleans_room,
+          cooks,
+          religion,
+          partying,
+          state,
+          room_type,
+          city,
+        })
+
+        await mySearch.save()
+      } else {
+        mySimilarSearch.set({
+          budget_range,
+          gender,
+          description,
+          interests,
+          smokes,
+          drinks,
+          cleans_room,
+          cooks,
+          religion,
+          partying,
+          state,
+          room_type,
+          city
+        })
+
+        await mySimilarSearch.save()
+      }
+    }
+
+
+
     const perPage = 3;
     const currentPage = page as number || 1
     const skip = (currentPage - 1) * perPage;
@@ -120,11 +161,16 @@ router.get(
     const totalDocuments = await HouseSeeker.countDocuments({ ...filters });
     const totalPages = Math.ceil(totalDocuments / perPage);
 
-    const users = await HouseSeeker.find({ ...filters })
+    let users = await HouseSeeker.find({ ...filters })
       .populate("user")
       .sort({ 'createdAt': -1 })
       .skip(skip)
       .limit(perPage)
+
+    // @ts-ignore
+    users = users.filter(user => user.user.id !== req.currentUser!.id)
+
+
 
     const pages = Pagination.getPages({ totalPages, req, pageSize: perPage })
 
@@ -136,13 +182,6 @@ router.get(
       urls: pages
     }
 
-    // const users = await HouseSeeker.paginate(
-    //   {
-    //     user: { $ne: req.currentUser!.id },
-    //     ...filters,
-    //   },
-    //   options
-    // );
 
     res.status(200).send({
       message: "Users retrieved",

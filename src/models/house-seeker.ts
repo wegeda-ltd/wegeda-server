@@ -13,7 +13,7 @@ interface HouseSeekerAttrs {
     church?: string;
     orientation_camp?: string;
     favorites?: string[];
-
+    category?: string;
     cooks: string;
     religion: string;
     partying: string;
@@ -28,6 +28,8 @@ interface HouseSeekerAttrs {
     profile_image: string;
     gallery_images?: string[];
     budget?: number[];
+
+    minimum_stay?: string;
 }
 
 interface HouseSeekerDoc extends Document {
@@ -38,7 +40,7 @@ interface HouseSeekerDoc extends Document {
     tertiary_institution?: string;
     church?: string;
     favorites?: string[];
-
+    category: string;
     orientation_camp?: string;
     cooks: string;
     religion: string;
@@ -54,6 +56,7 @@ interface HouseSeekerDoc extends Document {
     profile_image: string;
     gallery_images?: string[];
     budget?: number[];
+    minimum_stay: string;
 }
 
 interface HouseSeekerModel extends PaginateModel<HouseSeekerDoc> {
@@ -71,6 +74,10 @@ const houseSeekerSchema = new Schema({
         type: Schema.Types.ObjectId, ref: 'User'
     }],
 
+    category: {
+        type: String,
+        required: true
+    },
     cooks: {
         type: String,
         required: true
@@ -136,6 +143,10 @@ const houseSeekerSchema = new Schema({
     cleans_room: {
         type: String,
         required: true
+    },
+    minimum_stay: {
+        type: String,
+        default: '6'
     },
     profile_image: {
         type: String,

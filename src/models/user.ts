@@ -81,7 +81,7 @@ userSchema.statics.build = (attrs: UserAttrs) => {
 }
 
 
-userSchema.plugin(paginate)
+
 const User = model<UserDoc, UserModel>('User', userSchema)
 
 

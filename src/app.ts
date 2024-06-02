@@ -93,21 +93,24 @@ import {
     deleteMessageRouter
 } from './routes/messaging';
 import { checkinRouter, checkoutRouter, downloadPDFRouter, downloadRoommateAgreementRouter, getRoommatesRouter, uploadRoommateAgreementRouter } from './routes/checkin';
+import { adminLoginRouter, createAdminRouter, getAllListingsAdminRouter, getAllUsersAdminRouter } from './routes/admin';
+import cors from 'cors';
 
 
 const app = express();
 app.set('trust proxy', true);
 
+app.use(cors())
 app.use(json());
-app.use(cookieSession({
-    signed: false,
-    secure: false,
-
-}));
 
 
 
 app.use([
+    // ADMIN
+    getAllUsersAdminRouter,
+    getAllListingsAdminRouter,
+    adminLoginRouter,
+    createAdminRouter,
     // Checkin
     checkinRouter,
     checkoutRouter,

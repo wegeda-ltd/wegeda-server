@@ -6,18 +6,20 @@ import { FinancialStatement } from "../../models";
 
 const router = Router()
 
-router.get("/api/verification/get-financials/:user_id", currentUser, requireAuth, async (req: Request, res: Response) => {
+router.get("/api/verification/get-financials/:user_id",
+    // currentUser, requireAuth, 
+    async (req: Request, res: Response) => {
 
 
-    const financials = await FinancialStatement.findOne({ user: req.params.user_id })
+        const financials = await FinancialStatement.findOne({ user: req.params.user_id })
 
-    if (!financials) {
-        throw new NotFoundError("User's financial statements not found")
-    }
+        if (!financials) {
+            throw new NotFoundError("User's financial statements not found")
+        }
 
 
-    res.status(200).send({ message: 'Financial statement retrieved', financials })
+        res.status(200).send({ message: 'Financial statement retrieved', financials })
 
-})
+    })
 
 export { router as getFinancialStatementRouter }

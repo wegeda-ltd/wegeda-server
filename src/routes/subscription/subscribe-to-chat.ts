@@ -21,7 +21,7 @@ router.post("/api/subscriptions/chat-subscription/subscribe", currentUser, requi
 
         const { reference, duration, subscription_id } = req.body
 
-       await subscribe({user_id:req.currentUser!.id, reference, duration, subscription_id, profile_type:req.currentUser!.profile_type})
+        await subscribe({ user_id: req.currentUser!.id, reference, duration, subscription_id, profile_type: req.currentUser!.profile_type })
         const paymentVerified = await new Payment().verifyPayment(reference)
 
 
@@ -46,11 +46,12 @@ router.post("/api/subscriptions/chat-subscription/subscribe", currentUser, requi
 
         const exisitingSubscription = await UserSubscription.findOne({ user: req.currentUser!.id, subscription: payment.subscription_id })
 
-        if (exisitingSubscription) {
+        if (exisitingSubscription && !exisitingSubscription.is_expired) {
 
             exisitingSubscription.set({
+                subscription: chat_subscription.id,
                 amount_left: exisitingSubscription.amount_left + chat_subscription.subscription_maximum_chat,
-                expiry_date: exisitingSubscription.is_expired ? DateClass.get_expiry_date({ duration: payment.duration, created_at: new Date() }) : DateClass.get_expiry_date({ duration: payment.duration, created_at: new Date(exisitingSubscription.expiry_date) })
+                expiry_date: DateClass.get_expiry_date({ duration: payment.duration, created_at: new Date(exisitingSubscription.expiry_date) })
             })
 
             await exisitingSubscription.save()

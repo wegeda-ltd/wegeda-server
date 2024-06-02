@@ -1,14 +1,39 @@
 import { Request, Response, Router } from "express";
 import { NotFoundError } from "../../errors";
 import { currentUser, requireAuth, validateRequest } from "../../middlewares";
-import { ChatSubscription, ListingSubscription, UserSubscription, } from "../../models";
+import { ChatSubscription, ListingSubscription, User, UserSubscription, } from "../../models";
 import { UserType } from "../../types";
 
 const router = Router()
 
-router.get("/api/subscriptions/user-subscription", currentUser, requireAuth,
+router.get("/api/subscriptions/user-subscription",
+    //  currentUser, requireAuth,
     async (req: Request, res: Response) => {
 
+        const user_id = req.query.user_id
+
+        if (user_id) {
+            let user_subscription = await UserSubscription.find({ user: user_id })
+
+            let user = await User.findById(user_id)
+
+            const subscriptions = [];
+            if (user_subscription.length) {
+                for (const subscription of user_subscription) {
+                    if (user?.profile_type == UserType.HouseSeeker) {
+                        const sub = await ChatSubscription.findById(subscription.subscription)
+                        subscriptions.push(sub)
+                    } else {
+                        const sub = await ListingSubscription.findById(subscription.subscription)
+                        subscriptions.push(sub)
+                    }
+                }
+            }
+
+
+            return res.status(200).send({ message: 'Subscription retrieved', user_subscription, subscriptions })
+
+        }
         let user_subscription = await UserSubscription.findOne({ user: req.currentUser!.id, is_expired: false })
 
 

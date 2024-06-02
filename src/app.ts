@@ -93,7 +93,7 @@ import {
     deleteMessageRouter
 } from './routes/messaging';
 import { checkinRouter, checkoutRouter, downloadPDFRouter, downloadRoommateAgreementRouter, getRoommatesRouter, uploadRoommateAgreementRouter } from './routes/checkin';
-import { adminLoginRouter, createAdminRouter, getAllListingsAdminRouter, getAllUsersAdminRouter } from './routes/admin';
+import { adminLoginRouter, createAdminRouter, getAllListingsAdminRouter, getAllUsersAdminRouter, getCurrentAdminRouter } from './routes/admin';
 import cors from 'cors';
 
 
@@ -107,6 +107,7 @@ app.use(json());
 
 app.use([
     // ADMIN
+    getCurrentAdminRouter,
     getAllUsersAdminRouter,
     getAllListingsAdminRouter,
     adminLoginRouter,

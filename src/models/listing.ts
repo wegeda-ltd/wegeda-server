@@ -55,7 +55,7 @@ const listingSchema = new Schema({
     room_type: {
         type: String,
         required: true,
-        // enum: Object.values(RoomType),
+
     },
     total_bedroom: {
         type: Number,

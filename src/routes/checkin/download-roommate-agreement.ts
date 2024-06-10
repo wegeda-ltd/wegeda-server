@@ -19,7 +19,7 @@ router.post(
         body("checkin_date").notEmpty().withMessage("Please enter your checkin date"),
         body("checkin_mode").notEmpty().withMessage("Please enter your checkin mode"),
 
-        body("reference").notEmpty().withMessage("Please enter your payment reference")
+        // body("reference").notEmpty().withMessage("Please enter your payment reference")
     ],
     validateRequest,
     async (req: Request, res: Response) => {
@@ -28,46 +28,102 @@ router.post(
             reference,
             checkin_date,
             checkout_date,
-            checkin_mode
-
+            checkin_mode,
+            listing,
         } = req.body;
 
-        const paymentVerified = await new Payment().verifyPayment(reference)
+        const existingAgreement = await RoommateAgreement.findOne({
+            roommates: req.currentUser!.id,
+            listing
+        })
 
-        if (!paymentVerified.status) {
-            throw new ServerError('Unable to verify payment')
-        }
 
-        const filteredRoommates: Set<string> = new Set(roommates)
-        const roommies: string[] = Array.from(filteredRoommates)
+        let paymentVerified: any;
 
-        for (const user of roommies) {
-            const exists = await User.findById(user);
+        if (reference) {
+            paymentVerified = await new Payment().verifyPayment(reference)
 
-            if (!exists) {
-                throw new BadRequestError("Some users do not exist");
+            if (!paymentVerified.status) {
+                throw new ServerError('Unable to verify payment')
+            }
+
+
+            if (existingAgreement) {
+                await existingAgreement.updateOne({
+                    $push: { paid_by: req.currentUser!.id, payment_refs: reference }
+                })
+            } else {
+                const filteredRoommates: Set<string> = new Set(roommates)
+                const roommies: string[] = Array.from(filteredRoommates)
+
+                for (const user of roommies) {
+                    const exists = await User.findById(user);
+
+                    if (!exists) {
+                        throw new BadRequestError("Some users do not exist");
+
+                    }
+
+                }
+
+
+
+                const roommateAgreement = RoommateAgreement.build({
+                    roommates: roommies,
+                    payment_refs: [reference],
+                    checkin_date,
+                    checkin_mode,
+                    checkout_date,
+                    listing
+                })
+
+                await roommateAgreement.save()
+            }
+
+            return res.status(200).send({
+                message: "Kindly download your agreement",
+
+            })
+        } else {
+            if (!existingAgreement) {
+                const filteredRoommates: Set<string> = new Set(roommates)
+                const roommies: string[] = Array.from(filteredRoommates)
+
+                for (const user of roommies) {
+                    const exists = await User.findById(user);
+
+                    if (!exists) {
+                        throw new BadRequestError("Some users do not exist");
+
+                    }
+
+                }
+
+
+
+                const roommateAgreement = RoommateAgreement.build({
+                    roommates: roommies,
+                    checkin_date,
+                    checkin_mode,
+                    checkout_date,
+                    listing
+                })
+
+                await roommateAgreement.save()
+
 
             }
 
+            return res.status(204).send({
+                message: "You need to pay and download your roommate agreement\n\nBefore checking in",
+
+            })
         }
 
 
 
-        const roommateAgreement = RoommateAgreement.build({
-            roommates: roommies,
-            payment_ref: reference,
-            checkin_date,
-            checkin_mode,
-            checkout_date
-        })
-
-        await roommateAgreement.save()
 
 
-        return res.send({
-            message: "Kindly download your agreement",
-
-        })
 
     }
 );

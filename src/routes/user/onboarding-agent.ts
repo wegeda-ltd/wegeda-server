@@ -59,7 +59,6 @@ router.post(
       user: current_user.id,
     });
 
-    console.log(isHouseSeeker, "IS HOUSE SEEKER")
 
     if (isHouseSeeker) {
       throw new BadRequestError(

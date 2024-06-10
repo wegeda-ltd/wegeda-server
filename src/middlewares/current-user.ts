@@ -6,7 +6,7 @@ interface UserPayload {
   phone_number: string;
   profile_type: string;
   email: string;
-  token:string;
+  token: string;
 }
 
 declare global {
@@ -30,7 +30,8 @@ export const currentUser = (
     const payload = jwt.verify(token, process.env.JWT_KEY!) as UserPayload;
     req.currentUser = payload;
     req.currentUser.token = token;
-  } catch (error) {}
+
+  } catch (error) { }
 
   next();
 };

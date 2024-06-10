@@ -50,6 +50,7 @@ router.get("/api/users/current-user", currentUser, async (req, res) => {
 
     const userReturned = user ? { ...user._doc, id: user._id, is_checked_in: isCheckedIn?.is_active || false } : { ...req.currentUser, is_checked_in: isCheckedIn?.is_active || false }
 
+
     res.send({ currentUser: userReturned, verifications });
   } else {
     res.send({ currentUser: null });

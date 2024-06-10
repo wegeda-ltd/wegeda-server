@@ -18,16 +18,17 @@ router.get(
 
 
         const hasPaid = await RoommateAgreement.findOne({
-            roommates: req.currentUser!.id
+            roommates: req.currentUser!.id,
+            listing: req.query.listing_id
         }).populate('roommates downloaded_by')
 
         const checkedIn = await CheckIn.findOne({
             roommates: req.currentUser!.id
         })
 
-        if (!hasPaid) {
-            throw new BadRequestError("Please pay for the roommate agreement");
-        }
+        // if (!hasPaid) {
+        //     throw new BadRequestError("Please pay for the roommate agreement");
+        // }
         // if (checkedIn && checkedIn.is_active) {
         //     throw new BadRequestError("You have checked in already");
 

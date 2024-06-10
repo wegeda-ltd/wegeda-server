@@ -26,7 +26,8 @@ router.post(
             checkin_date,
             checkout_date,
             checkin_mode,
-            roommate_agreement
+            roommate_agreement,
+            listing_id
         } = req.body;
 
 
@@ -53,6 +54,7 @@ router.post(
             checkout_date,
             checkin_mode,
             roommate_agreement,
+            listing: listing_id
         })
 
 

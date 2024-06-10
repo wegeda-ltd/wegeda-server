@@ -5,10 +5,11 @@ interface RoommateAgreementAttrs {
     checkin_date: string;
     checkout_date?: string;
     checkin_mode: CheckInMode;
-
-    payment_ref: string;
+    listing: string;
+    payment_refs?: string[];
     roommates: string[];
     downloaded_by?: string[];
+    paid_by?: string[];
     uploaded?: boolean;
     fileName?: string;
 
@@ -18,10 +19,11 @@ interface RoommateAgreementDoc extends Document {
     checkin_date: string;
     checkout_date?: string;
     checkin_mode: CheckInMode;
-
-    payment_ref: string;
+    listing: string;
+    payment_refs?: string[];
     roommates: string[];
     downloaded_by?: string[];
+    paid_by?: string[];
     uploaded?: boolean;
     fileName?: string;
 
@@ -47,10 +49,9 @@ const roommateAgreementSchema = new Schema({
         enum: Object.values(CheckInMode),
 
     },
-    payment_ref: {
+    payment_refs: [{
         type: String,
-        required: true
-    },
+    }],
     fileName: {
         type: String,
     },
@@ -64,6 +65,16 @@ const roommateAgreementSchema = new Schema({
         ref: 'User',
         required: true
     }],
+    listing: {
+        type: Schema.Types.ObjectId,
+        ref: 'Listing',
+    },
+    paid_by: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+        }
+    ],
     downloaded_by: [{
         type: Schema.Types.ObjectId,
         ref: 'User',

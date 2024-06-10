@@ -88,48 +88,43 @@ router.post(
       return res
         .status(200)
         .send({ message: "Otp verification successful!", token: userJwt });
-
-    }
-
-
-
-
-
-    userJwt = jwt.sign(
-      {
-        id: userExist!.id,
-        email: userExist!.email,
-        phone_number: userExist!.phone_number,
-        profile_type: userExist!.profile_type,
-      },
-      process.env.JWT_KEY!
-    );
-
-
-    // POPULATE CURRENT USER
-    const current_user = await User.findById(userExist.id)
-    let user;
-    let verifications;
-    if (userExist.profile_type === UserType.HouseSeeker) {
-      user = await HouseSeeker.findOne({ user: userExist.id }).populate(
-        "user"
-      );
-      verifications = await Verification.findOne({ user: userExist.id });
     } else {
-      user = await Agent.findOne({ user: userExist.id }).populate("user");
-    }
+      userJwt = jwt.sign(
+        {
+          id: userExist!.id,
+          email: userExist!.email,
+          phone_number: userExist!.phone_number,
+          profile_type: userExist!.profile_type,
+        },
+        process.env.JWT_KEY!
+      );
 
-    if (user?.profile_image && !current_user?.profile_image) {
-      current_user?.set({
-        profile_image: user?.profile_image,
-        status: 'online'
-      })
 
-      await current_user?.save()
+      // POPULATE CURRENT USER
+      const current_user = await User.findById(userExist.id)
+      let user;
+      let verifications;
+      if (userExist.profile_type === UserType.HouseSeeker) {
+        user = await HouseSeeker.findOne({ user: userExist.id }).populate(
+          "user"
+        );
+        verifications = await Verification.findOne({ user: userExist.id });
+      } else {
+        user = await Agent.findOne({ user: userExist.id }).populate("user");
+      }
+
+      if (user?.profile_image && !current_user?.profile_image) {
+        current_user?.set({
+          profile_image: user?.profile_image,
+          status: 'online'
+        })
+
+        await current_user?.save()
+      }
+      return res
+        .status(200)
+        .send({ message: "Otp verification successful!", token: userJwt, user });
     }
-    res
-      .status(200)
-      .send({ message: "Otp verification successful!", token: userJwt, user });
   }
 );
 

@@ -7,7 +7,7 @@ import { UserType } from "../../types";
 const router = Router()
 
 router.get("/api/subscriptions/user-subscription",
-    //  currentUser, requireAuth,
+    currentUser, requireAuth,
     async (req: Request, res: Response) => {
 
         const user_id = req.query.user_id
@@ -33,20 +33,22 @@ router.get("/api/subscriptions/user-subscription",
 
             return res.status(200).send({ message: 'Subscription retrieved', user_subscription, subscriptions })
 
+        } else {
+            let user_subscription = await UserSubscription.findOne({ user: req.currentUser!.id, is_expired: false })
+
+
+            if (!user_subscription) {
+                return res.status(200).send({ message: 'Subscription retrieved', account_type: req.currentUser!.profile_type, user_subscription: null, subscription: null })
+            }
+            let subscription = req.currentUser!.profile_type == UserType.HouseSeeker ?
+                await ChatSubscription.findById(user_subscription.subscription) :
+                await ListingSubscription.findById(user_subscription.subscription)
+
+            delete user_subscription.subscription
+
+            return res.status(200).send({ message: 'Subscription retrieved', user_subscription, subscription })
         }
-        let user_subscription = await UserSubscription.findOne({ user: req.currentUser!.id, is_expired: false })
 
-
-        if (!user_subscription) {
-            return res.status(200).send({ message: 'Subscription retrieved', account_type: req.currentUser!.profile_type, user_subscription: null, subscription: null })
-        }
-        let subscription = req.currentUser!.profile_type == UserType.HouseSeeker ?
-            await ChatSubscription.findById(user_subscription.subscription) :
-            await ListingSubscription.findById(user_subscription.subscription)
-
-        delete user_subscription.subscription
-
-        res.status(200).send({ message: 'Subscription retrieved', user_subscription, subscription })
 
     })
 

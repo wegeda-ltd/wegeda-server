@@ -8,6 +8,7 @@ interface CheckInAttrs {
     roommate_agreement?: string;
     roommates: string[];
     is_active?: boolean;
+    listing: string;
     address?: string;
     moving_to?: string;
 
@@ -20,6 +21,7 @@ interface CheckInDoc extends Document {
     roommate_agreement?: string;
     roommates: string[];
     is_active?: boolean;
+    listing: string;
     address?: string;
     moving_to?: string;
 
@@ -48,14 +50,17 @@ const checkInSchema = new Schema({
         type: String,
         required: true,
         enum: Object.values(CheckInMode),
-
     },
 
     is_active: {
         type: Boolean,
         default: true
     },
+    listing: {
+        type: Schema.Types.ObjectId,
+        ref: 'Listing',
 
+    },
     roommate_agreement: {
         type: Schema.Types.ObjectId,
         ref: 'RoommateAgreement',

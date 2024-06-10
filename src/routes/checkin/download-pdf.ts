@@ -31,19 +31,26 @@ router.get(
             throw new BadRequestError("Kindly pay the roommate agreement fee")
         }
 
-        if (!roommate_agreement.downloaded_by?.includes(req.currentUser!.id)) {
-            await roommate_agreement.updateOne({
-                $push: { downloaded_by: req.currentUser!.id }
-            })
+        if (roommate_agreement.paid_by?.includes(req.currentUser!.id)) {
+            if (!roommate_agreement.downloaded_by?.includes(req.currentUser!.id)) {
+                await roommate_agreement.updateOne({
+                    $push: { downloaded_by: req.currentUser!.id }
+                })
 
-        }
-
-        return res.download(filePath, 'roommate-agreement.pdf', (err) => {
-            if (err) {
-                console.log(err.message, "ERROR")
             }
 
-        })
+            return res.download(filePath, 'roommate-agreement.pdf', (err) => {
+                if (err) {
+                    console.log(err.message, "ERROR")
+                }
+
+            })
+        } else {
+            throw new BadRequestError("Please pay for and download the roommate agreement form")
+        }
+
+
+
 
     }
 );

@@ -8,8 +8,8 @@ const router = Router();
 
 router.get(
     "/api/messages/get-group",
-    // currentUser,
-    // requireAuth,
+    currentUser,
+    requireAuth,
     [
         query("roommates")
             .isArray({ min: 2 })

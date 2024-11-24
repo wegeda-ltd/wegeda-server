@@ -14,9 +14,6 @@ router.delete("/api/users", async (req, res) => {
         throw new NotFoundError("User not found")
     }
 
-    console.log(otp, id, "OTP AND ID")
-
-    console.log(user, "USER FOUND")
     const otpVerified = await OtpClass.verifyOtp({ email: user.email, user_otp: otp })
 
     console.log(otpVerified, "OTP VERIFIED")
@@ -63,7 +60,7 @@ router.post("/api/users/initiate-deletion", async (req, res) => {
 
     const otp = await OtpClass.generateOtp({ email })
 
-    const link = `http://localhost:3000/delete-account/?id=${user.id}&code=${otp}`
+    const link = `https://wegeda.com/delete-account/?id=${user.id}&code=${otp}`
     let message = `
     <p>You requested to delete your account</p><br/>
     <br/>

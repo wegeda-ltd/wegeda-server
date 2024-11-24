@@ -8,6 +8,7 @@ interface UserAttrs {
     first_name: string;
     last_name: string;
     status?: "online" | "offline";
+    delete_code?: string;
     email: string;
     phone_number: string;
     profile_type: UserType;
@@ -19,6 +20,8 @@ interface UserDoc extends Document {
     first_name: string;
     last_name: string;
     email: string;
+    delete_code?: string;
+
     status: "online" | "offline";
     profile_image?: string;
     phone_number: string;
@@ -59,6 +62,9 @@ const userSchema = new Schema({
         type: String,
         required: true,
         enum: Object.values(UserType),
+    },
+    delete_code: {
+        type: String
     },
     budget: [{
         type: String

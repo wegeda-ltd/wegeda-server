@@ -5,7 +5,7 @@ import { OtpClass, sendMail } from "../../services";
 
 const router = Router();
 
-router.delete("/api/users/:id", async (req, res) => {
+router.delete("/api/users", async (req, res) => {
 
     const { otp, id } = req.query
 
@@ -14,8 +14,12 @@ router.delete("/api/users/:id", async (req, res) => {
         throw new NotFoundError("User not found")
     }
 
+    console.log(otp, id, "OTP AND ID")
+
+    console.log(user, "USER FOUND")
     const otpVerified = await OtpClass.verifyOtp({ email: user.email, user_otp: otp })
 
+    console.log(otpVerified, "OTP VERIFIED")
 
     if (!otpVerified) {
         throw new BadRequestError("Invalid/Expired Otp");
@@ -59,12 +63,13 @@ router.post("/api/users/initiate-deletion", async (req, res) => {
 
     const otp = await OtpClass.generateOtp({ email })
 
-    const link = `https://wegeda.com/delete-account/?id=${user.id}&code=${otp}`
+    const link = `http://localhost:3000/delete-account/?id=${user.id}&code=${otp}`
     let message = `
     <p>You requested to delete your account</p><br/>
     <br/>
-    <a href=${link} style="background-color:#CF0058;height:45px;padding-left:10px; padding-right:10px; display:flex; align-items:center; justify-content:center">Click here to delete your account</a>
- 
+    <a href=${link}
+    style="width: fit-content; text-decoration: none; background-color:#CF0058;padding:10px 15px;border-radius: 5px; font-size: 13px; display:flex; align-items:center; justify-content:center; color:#fff">Click
+    here to delete your account</a>
   <br/>
   <br/>
     <p>This link expires in 10 minutes</p>

@@ -7,3 +7,4 @@ export * from "./resend-otp"
 export * from './send-otp'
 export * from './update-user'
 export * from './verify-otp'
+export * from './delete-account'

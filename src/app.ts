@@ -50,6 +50,7 @@ import {
 
 import {
     currentUserRouter,
+    deleteUserRouter,
     getAllUsersRouter,
     getUserByIdRouter,
     onboardingAgentRouter,
@@ -169,6 +170,7 @@ app.use([
     sendOtpRouter,
     updateUserRouter,
     verifyOtpRouter,
+    deleteUserRouter,
 
     // Verification
     getAddressHistoryRouter,

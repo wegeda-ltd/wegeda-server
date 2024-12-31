@@ -77,6 +77,7 @@ router.post(
       partying,
       religion,
       tertiary_institution,
+      category
     } = req.body;
 
     const current_user = await User.findById(req.currentUser?.id);
@@ -129,6 +130,7 @@ router.post(
       smokes,
       drinks,
       cleans_room,
+      category,
       profile_image: profile_image
         ? profile_image
         : gender === "female"

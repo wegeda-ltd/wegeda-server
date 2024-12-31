@@ -31,13 +31,14 @@ router.patch(
     if (!current_user) {
       return;
     }
-
+    let profileImage;
     if (current_user.profile_type == UserType.HouseSeeker) {
       const user = await HouseSeeker.findOne({ user: current_user.id });
       if (!user) {
         return;
       }
 
+      profileImage = profile_image ? profile_image : user.profile_image;
       user.set({
         about: about ? about : user.about,
         description: descriptions ? descriptions : user.description,
@@ -55,11 +56,14 @@ router.patch(
       });
 
       await user.save();
+
     } else if (current_user.profile_type == UserType.Agent) {
       const user = await Agent.findOne({ user: current_user.id });
       if (!user) {
         return;
       }
+
+      profileImage = profile_image ? profile_image : user.profile_image;
 
       user.set({
         profile_image: profile_image ? profile_image : user.profile_image,
@@ -71,10 +75,13 @@ router.patch(
       await user.save();
     }
     current_user.set({
-      profile_image
+      profile_image: profileImage
     })
 
     await current_user.save()
+
+    const myUser = await User.findById(req.currentUser?.id);
+
     res.status(200).send({ message: "Profile updated" });
   }
 );

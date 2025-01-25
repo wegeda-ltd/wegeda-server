@@ -51,20 +51,48 @@ router.post(
     message = `Your verification OTP is ${email_otp}`;
 
 
-    console.log(phone_otp, "PHONE \n", email_otp, "EMAIL");
+    console.log(email_otp, "EMAIL OTP...")
+    // console.log(phone_otp, "PHONE \n", email_otp, "EMAIL");
 
-    await sendMail({
-      message: `Your SMS verification OTP is ${phone_otp}`,
-      email,
-      subject: `Your WEGEDA Verification OTP is ${phone_otp} - sms`,
-    });
-    await sendMail({
-      message,
-      email,
-      subject: `Your WEGEDA Verification OTP is ${email_otp}`,
-    });
+    // await sendMail({
+    //   message: `Your SMS verification OTP is ${phone_otp}`,
+    //   email,
+    //   subject: `Your WEGEDA Verification OTP is ${phone_otp} - sms`,
+    // });
+    if (email_otp) {
+      await sendMail({
+        message: `
+      <html>
+        <body>
+          <p>Hi</p>
+          <p>Welcome to Wegeda! Use the OTP below to complete your signup</p>
+          <br/>
+          <p style="font-family:monospace"><b>${email_otp}</b></p>
 
-    res.status(200).send({ message: "Otp sent to your sms and email" });
+          <br/>
+          <p>This code is valid for <b>10 minutes</b>. Please don't share it with anyone.</p>
+
+          <br/>
+          
+
+          <p>Need help? Contact us at <a href="mailto:hello@wegeda.com">hello@wegeda.com</a>
+
+          <p>Thanks for choosing Wegeda!</p>
+          <br/>
+
+          <p>Best,</p>
+          <p>The Wegeda Team</p>
+        </body>
+      </html>
+      
+      `,
+        email,
+        subject: `One-Time Password(OTP) For Your Account`,
+      });
+
+    }
+
+    res.status(200).send({ message: "Otp sent to your email" });
   }
 );
 

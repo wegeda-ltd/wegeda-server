@@ -30,13 +30,37 @@ router.post("/api/users/resend-otp", async (req: Request, res: Response) => {
     res.status(201).send({ message: "Otp sent to your phone, check sms" });
   } else {
     let email_otp = await OtpClass.resendOtp({ email });
-    let message = `Your verification OTP is ${email_otp}`;
 
     await sendMail({
-      message,
+      message: `
+      <html>
+        <body>
+          <p>Hi</p>
+          <p>Welcome to Wegeda! Use the OTP below to complete your signup</p>
+          <br/>
+          <p style="font-family:monospace"><b>${email_otp}</b></p>
+
+          <br/>
+          <p>This code is valid for <b>10 minutes</b>. Please don't share it with anyone.</p>
+
+          <br/>
+          
+
+          <p>Need help? Contact us at <a href="mailto:hello@wegeda.com">hello@wegeda.com</a>
+
+          <p>Thanks for choosing Wegeda!</p>
+          <br/>
+
+          <p>Best,</p>
+          <p>The Wegeda Team</p>
+        </body>
+      </html>
+      
+      `,
       email,
-      subject: `Your Verification OTP is ${email_otp}`,
+      subject: `One-Time Password(OTP) For Your Account`,
     });
+
 
     res.status(201).send({ message: "Otp sent to your sms and email" });
   }

@@ -17,24 +17,45 @@ export class OtpClass {
             })
 
             let otp;
-
+            let otpHolder;
+            let lastOtp;
             // hash otp
             const hashedOtp = await argon.hash(OTP)
             if (phone_number) {
-                otp = Otp.build({
-                    phone_number,
-                    otp: hashedOtp
-                })
+                otpHolder = await Otp.find({ phone_number })
+                lastOtp = otpHolder[otpHolder.length - 1]
+                // if (otpHolder) {
+                //     for (const otp of otpHolder) {
+                //         await otp.remove()
+                //     }
+                // }
+                if (!otpHolder.length) {
+                    otp = Otp.build({
+                        phone_number,
+                        otp: hashedOtp
+                    })
+                }
+
             } else {
-                otp = Otp.build({
-                    email,
-                    otp: hashedOtp
-                })
+                otpHolder = await Otp.find({ email })
+                lastOtp = otpHolder[otpHolder.length - 1]
+
+                if (!otpHolder.length) {
+                    otp = Otp.build({
+                        email,
+                        otp: hashedOtp
+                    })
+                }
+
             }
 
+            if (otp) {
+                await otp.save()
+                return OTP
+            } else {
+                return null;
+            }
 
-            await otp.save()
-            return OTP
         } catch (error) {
             console.log(error, "ERROR HERE")
 

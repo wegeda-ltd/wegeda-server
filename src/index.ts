@@ -22,6 +22,9 @@ declare global {
     }
 }
 
+let port = process.env.PORT || 8081
+
+
 const start = async () => {
     console.log("starting up...")
     if (!process.env.JWT_KEY) {
@@ -43,8 +46,8 @@ const start = async () => {
     } catch (error) {
         console.log(error)
     }
-    let port = process.env.PORT || 8081
     server.listen(port, () => {
+        console.log(port, "PORT OO")
         console.log("listening on port " + port);
     })
 }
@@ -63,6 +66,7 @@ io.use((socket: any, next) => {
 })
 
 express.request.io = io;
+const baseUrl = 'https://wegeda-server.pipeops.app'
 io.on("connection", async (socket) => {
     // @ts-ignore
     express.request.socket = socket
@@ -85,7 +89,7 @@ io.on("connection", async (socket) => {
     socket.on("getMessages", async (token) => {
 
         try {
-            const response = await axios.get('http://127.0.0.1:5100/api/messages', {
+            const response = await axios.get(`${baseUrl}/api/messages`, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
@@ -97,7 +101,8 @@ io.on("connection", async (socket) => {
 
             io.emit("messages", messages)
         } catch (error: any) {
-            console.log(error.response);
+            console.log(error, "ERROR")
+            console.log(error.response, "ERROR");
 
         }
     })
@@ -107,18 +112,18 @@ io.on("connection", async (socket) => {
         if (token) {
 
             try {
-                const subResponse = await axios.get('http://127.0.0.1:5100/api/subscriptions/user-subscription', {
-                    headers: {
-                        Authorization: 'Bearer ' + token
-                    }
-                })
+                // const subResponse = await axios.get('http://127.0.0.1:5100/api/subscriptions/user-subscription', {
+                //     headers: {
+                //         Authorization: 'Bearer ' + token
+                //     }
+                // })
 
-                const subscription = subResponse.data
-                if (subscription.account_type == UserType.HouseSeeker && (!subscription.user_subscription || subscription.user_subscription.amount_left < 1 || subscription.is_expired)) {
-                    io.emit("no-subscription", { message: "User has no active subscription" })
-                    return;
-                }
-                const response = await axios.get(`http://127.0.0.1:5100/api/messages/${message_id}/${user_id}`, {
+                // const subscription = subResponse.data
+                // if (subscription.account_type == UserType.HouseSeeker && (!subscription.user_subscription || subscription.user_subscription.amount_left < 1 || subscription.is_expired)) {
+                //     io.emit("no-subscription", { message: "User has no active subscription" })
+                //     return;
+                // }
+                const response = await axios.get(`${baseUrl}/api/messages/${message_id}/${user_id}`, {
                     headers: {
                         Authorization: 'Bearer ' + token
                     }
@@ -136,7 +141,7 @@ io.on("connection", async (socket) => {
 
     socket.on("sendMessage", async ({ token, data }) => {
         try {
-            const resp = await axios.post('http://127.0.0.1:5100/api/messages', data, {
+            const resp = await axios.post(`${baseUrl}/api/messages`, data, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
@@ -153,7 +158,7 @@ io.on("connection", async (socket) => {
         console.log("HERE OOOO");
 
         try {
-            const resp = await axios.patch(`http://127.0.0.1:5100/api/messages/${data.id}`, data, {
+            const resp = await axios.patch(`${baseUrl}/api/messages/${data.id}`, data, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
@@ -169,7 +174,7 @@ io.on("connection", async (socket) => {
     socket.on("deleteMessage", async ({ token, data }) => {
 
         try {
-            const resp = await axios.delete(`http://127.0.0.1:5100/api/messages/${data.id}`, {
+            const resp = await axios.delete(`${baseUrl}/api/messages/${data.id}`, {
                 headers: {
                     Authorization: 'Bearer ' + token
                 }
